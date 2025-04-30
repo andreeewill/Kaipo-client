@@ -1,5 +1,5 @@
 "use client";
-import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { Calendar, Home, Search, PersonStanding, FileText } from "lucide-react";
 
 import {
@@ -53,7 +53,7 @@ const items = [
 ];
 
 export function AppSidebar() {
-  const router = useRouter();
+  const pathname = usePathname();
 
   return (
     <Sidebar>
@@ -72,7 +72,7 @@ export function AppSidebar() {
               {items.map((item) => (
                 <SidebarMenuItem
                   key={item.title}
-                  className={router.pathname === item.url ? "active" : ""}
+                  className={pathname === item.url ? "active" : ""}
                 >
                   <SidebarMenuButton asChild>
                     <a href={item.url}>
@@ -85,9 +85,7 @@ export function AppSidebar() {
                       {item.subItems.map((subItem) => (
                         <SidebarMenuSubItem
                           key={subItem.title}
-                          className={
-                            router.pathname === subItem.url ? "active" : ""
-                          }
+                          className={pathname === subItem.url ? "active" : ""}
                         >
                           <SidebarMenuButton asChild>
                             <a href={subItem.url}>
