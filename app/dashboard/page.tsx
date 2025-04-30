@@ -1,8 +1,4 @@
 "use client";
-<<<<<<< HEAD
-
-=======
->>>>>>> 6af0dccdfb56e033032a3ebc282a16f0fc0ee1a3
 import { Layout } from "@/components/layout/Layout";
 import { useState } from "react";
 import {
