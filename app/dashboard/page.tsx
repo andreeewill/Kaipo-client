@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { Layout } from "@/components/layout/Layout";
 import { useState } from "react";
 
@@ -10,7 +10,7 @@ const components = {
 };
 
 export default function Dashboard() {
-  const [selected, setSelected] = useState("Jadwal Pasien");
+  const [selected] = useState("Jadwal Pasien");
 
   return (
     <Layout>
