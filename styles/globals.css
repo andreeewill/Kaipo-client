@@ -124,15 +124,32 @@
 }
 
 .sidebar-menu-item.active a {
-  background-color: #e0f7fa; /* Highlight color */
-  color: #00796b; /* Active text color */
+  background-color: #444444; /* Highlight color */
+  color: #ffffff; /* Active text color */
   font-weight: bold;
   border-radius: 4px;
 }
 
 .sidebar-menu-sub-item.active a {
-  background-color: #b2dfdb;
-  color: #004d40;
+  background-color: #444444;
+  color: #ffffff;
+  font-weight: bold;
+  border-radius: 4px;
+}
+
+.sidebar.open {
+  width: 200px;
+  transition: width 0.3s ease;
+}
+
+.sidebar.closed {
+  width: 50px;
+  transition: width 0.3s ease;
+}
+
+.sidebar-menu-item.active a {
+  background-color: #e0f7fa;
+  color: #00796b;
   font-weight: bold;
   border-radius: 4px;
 }
