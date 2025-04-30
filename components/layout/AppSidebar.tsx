@@ -1,9 +1,20 @@
 "use client";
-import { useRouter } from "next/navigation";
-import { Calendar, Home, Search, PersonStanding, FileText } from "lucide-react";
+import { useState } from "react";
+import {
+  Calendar,
+  Home,
+  Inbox,
+  Search,
+  PersonStanding,
+  FileText,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 
 import {
+  useSidebar,
   Sidebar,
+  SidebarTrigger,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
@@ -15,8 +26,10 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 
+// Menu items.
 const items = [
   {
     title: "Jadwal Pasien",
@@ -53,58 +66,83 @@ const items = [
 ];
 
 export function AppSidebar() {
-  const router = useRouter();
+  const pathname = usePathname();
+  const { open, toggleSidebar } = useSidebar();
+
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  const isActive = (url: string) => {
+    const normalizedPathname = pathname.replace(/\/$/, "");
+    const normalizedUrl = url.replace(/\/$/, "");
+    return normalizedPathname === normalizedUrl;
+  };
 
   return (
-    <Sidebar>
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>
-            <Image
-              src="/icon.jpg"
-              width={100}
-              height={50}
-              alt="Halo dek"
-            ></Image>
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem
-                  key={item.title}
-                  className={router.pathname === item.url ? "active" : ""}
-                >
-                  <SidebarMenuButton asChild>
-                    <a href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                  {item.subItems && (
-                    <SidebarMenuSub>
-                      {item.subItems.map((subItem) => (
-                        <SidebarMenuSubItem
-                          key={subItem.title}
-                          className={
-                            router.pathname === subItem.url ? "active" : ""
-                          }
-                        >
-                          <SidebarMenuButton asChild>
-                            <a href={subItem.url}>
-                              <subItem.icon />
-                              <span>{subItem.title}</span>
-                            </a>
-                          </SidebarMenuButton>
-                        </SidebarMenuSubItem>
-                      ))}
-                    </SidebarMenuSub>
-                  )}
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-    </Sidebar>
+    <div style={{ display: "flex" }}>
+      <Sidebar className={isSidebarOpen ? "open" : "closed"}>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarGroupLabel>
+              <Image
+                src="/icon.jpg"
+                width={100}
+                height={50}
+                alt="Halo dek"
+              ></Image>
+            </SidebarGroupLabel>
+
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {items.map((item) => (
+                  <SidebarMenuItem
+                    key={item.title}
+                    className={isActive(item.url) ? "active" : ""}
+                  >
+                    <SidebarMenuButton asChild>
+                      <a href={item.url}>
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </a>
+                    </SidebarMenuButton>
+                    {item.subItems && (
+                      <SidebarMenuSub>
+                        {item.subItems.map((subItem) => (
+                          <SidebarMenuSubItem
+                            key={subItem.title}
+                            className={isActive(subItem.url) ? "active" : ""}
+                          >
+                            <SidebarMenuButton asChild>
+                              <a href={subItem.url}>
+                                <subItem.icon />
+                                <span>{subItem.title}</span>
+                              </a>
+                            </SidebarMenuButton>
+                          </SidebarMenuSubItem>
+                        ))}
+                      </SidebarMenuSub>
+                    )}
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+
+            {/* <SidebarTrigger/> */}
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
+
+      <button
+        onClick={toggleSidebar}
+        className="cursor-pointer hover:bg-gray-200 p-2 rounded-full"
+        style={{
+          position: "absolute",
+          top: "10px",
+          left: open ? "200px" : "10px",
+          zIndex: 1000,
+        }}
+      >
+        {open ? <ChevronLeft /> : <ChevronRight />}
+      </button>
+    </div>
   );
 }
