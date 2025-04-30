@@ -57,7 +57,7 @@ const items = [
         icon: FileText,
       },
       {
-        title: "Histori Rekam Medis",
+        title: "Riwayat Rekam Medis",
         url: "/dashboard/medical-record/history",
         icon: FileText,
       },
