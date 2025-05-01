@@ -83,9 +83,9 @@ export default function CalendarPage() {
         {/* Modal for Adding Events */}
         {isModalOpen && (
           <Dialog
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
-            className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
+          // isOpen={isModalOpen}
+          // onClose={() => setIsModalOpen(false)}
+          // className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
           >
             <div className="bg-white p-6 rounded-lg shadow-lg w-96">
               <h2 className="text-xl font-bold mb-4">Add Event</h2>

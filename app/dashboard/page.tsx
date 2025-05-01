@@ -32,7 +32,7 @@ const generateDummyData = () => {
 const dummyData = generateDummyData();
 
 export default function Dashboard() {
-  const [selected, setSelected] = useState("Jadwal Pasien");
+  const [selected] = useState("Jadwal Pasien");
   const [search, setSearch] = useState("");
   const [sortColumn, setSortColumn] = useState("id");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");

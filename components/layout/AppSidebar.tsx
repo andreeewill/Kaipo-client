@@ -3,7 +3,7 @@ import { useState } from "react";
 import {
   Calendar,
   Home,
-  Inbox,
+  // Inbox,
   Search,
   PersonStanding,
   FileText,
@@ -14,7 +14,7 @@ import {
 import {
   useSidebar,
   Sidebar,
-  SidebarTrigger,
+  // SidebarTrigger,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
@@ -69,7 +69,7 @@ export function AppSidebar() {
   const pathname = usePathname();
   const { open, toggleSidebar } = useSidebar();
 
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen] = useState(true);
 
   const isActive = (url: string) => {
     const normalizedPathname = pathname.replace(/\/$/, "");
