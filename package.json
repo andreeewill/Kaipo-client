@@ -1,5 +1,5 @@
 {
-  "name": "odontorec",
+  "name": "kaipo-client",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -12,16 +12,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/andreeewill/OdontoREC.git"
+    "url": "git+https://github.com/andreeewill/Kaipo-client.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "module",
   "bugs": {
-    "url": "https://github.com/andreeewill/OdontoREC/issues"
+    "url": "https://github.com/andreeewill/Kaipo-client/issues"
   },
-  "homepage": "https://github.com/andreeewill/OdontoREC#readme",
+  "homepage": "https://github.com/andreeewill/Kaipo-client#readme",
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.11",
     "@radix-ui/react-separator": "^1.1.4",
