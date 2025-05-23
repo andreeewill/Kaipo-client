@@ -31,7 +31,7 @@ const generateDummyData = () => {
 
 const dummyData = generateDummyData();
 
-export default function Dashboard() {
+export default function Schedule() {
   const [selected] = useState("Jadwal Pasien");
   const [search, setSearch] = useState("");
   const [sortColumn, setSortColumn] = useState("id");

@@ -32,14 +32,14 @@ import Image from "next/image";
 // Menu items.
 const items = [
   {
-    title: "Jadwal Pasien",
-    url: "/dashboard",
-    icon: Home,
+    title: "Calendar",
+    url: "/calendar",
+    icon: Calendar,
   },
   {
-    title: "Calendar",
-    url: "/dashboard/calendar",
-    icon: Calendar,
+    title: "Jadwal Pasien",
+    url: "/schedule",
+    icon: Home,
   },
   {
     title: "Riwayat Pasien",
