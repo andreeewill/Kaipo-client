@@ -39,6 +39,16 @@ const generateDummyData = () => {
       start: new Date(`2025-05-${String(day).padStart(2, "0")}T09:00:00`),
       end: new Date(`2025-05-${String(day).padStart(2, "0")}T10:00:00`),
       description: `Routine check-up with Doctor ${Math.ceil(i / 10)}`,
+      timeline: [
+        {
+          date: `2025-04-${String((day % 30) + 1).padStart(2, "0")}`,
+          description: `Visited for check-up with Doctor ${Math.ceil(i / 10)}`,
+        },
+        {
+          date: `2025-03-${String((day % 30) + 5).padStart(2, "0")}`,
+          description: `Follow-up for Diagnosis ${i}`,
+        },
+      ],
     });
   }
   return data;
@@ -186,6 +196,23 @@ export default function CalendarPage() {
               <p className="mt-4">
                 <strong>Description:</strong> {selectedEvent.description}
               </p>
+              <div className="mt-6">
+                <h3 className="text-lg font-medium mb-2">Timeline</h3>
+                <div className="space-y-4">
+                  {selectedEvent.timeline
+                    .reverse() // Show latest events first
+                    .map((entry, index) => (
+                      <div
+                        key={index}
+                        className="border-l-2 border-blue-500 pl-4"
+                      >
+                        <p className="text-sm text-gray-600">
+                          <strong>{entry.date}:</strong> {entry.description}
+                        </p>
+                      </div>
+                    ))}
+                </div>
+              </div>
               <div className="mt-6 text-right">
                 <Button onClick={handleCloseModal}>Close</Button>
               </div>
