@@ -11,11 +11,13 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { format, isSameDay, parseISO } from "date-fns";
 
 // Dummy data for the table
 const generateDummyData = () => {
   const data = [];
   for (let i = 1; i <= 50; i++) {
+    const day = i % 30 || 1; // Ensure day is between 1 and 30
     data.push({
       id: i,
       name: `Patient ${i}`,
@@ -23,7 +25,17 @@ const generateDummyData = () => {
       gender: i % 2 === 0 ? "Male" : "Female",
       diagnosis: `Diagnosis ${i}`,
       doctor: `Doctor ${i}`,
-      date: `2025-05-${String(i % 30).padStart(2, "0")}`,
+      date: `2025-05-${String(day).padStart(2, "0")}`,
+      timeline: [
+        {
+          date: `2025-04-${String((day % 30) + 1).padStart(2, "0")}`,
+          description: `Visited for check-up with Doctor ${i}`,
+        },
+        {
+          date: `2025-03-${String((day % 30) + 5).padStart(2, "0")}`,
+          description: `Follow-up for Diagnosis ${i}`,
+        },
+      ],
     });
   }
   return data;
@@ -38,6 +50,7 @@ export default function Schedule() {
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [selectedRow, setSelectedRow] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedDate, setSelectedDate] = useState("2025-05-01");
   const rowsPerPage = 10;
 
   const handleSort = (column: string) => {
@@ -70,6 +83,10 @@ export default function Schedule() {
 
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
 
+  const patientsOnSelectedDate = dummyData.filter((row) =>
+    isSameDay(parseISO(row.date), parseISO(selectedDate))
+  );
+
   return (
     <Layout>
       <div className="flex h-full w-full">
@@ -82,6 +99,25 @@ export default function Schedule() {
             onChange={(e) => setSearch(e.target.value)}
             className="mb-4"
           />
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Select Date:
+            </label>
+            <Input
+              type="date"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="w-full"
+            />
+          </div>
+          <div className="mb-6 p-4 border rounded-lg shadow-md bg-gray-50">
+            <h2 className="text-lg font-medium text-gray-700 mb-2">
+              Patients on {format(parseISO(selectedDate), "MMMM dd, yyyy")}
+            </h2>
+            <p className="text-4xl font-bold text-blue-600">
+              {patientsOnSelectedDate.length}
+            </p>
+          </div>
           <Table>
             <TableHeader>
               <TableRow>
@@ -204,6 +240,18 @@ export default function Schedule() {
               <p>
                 <strong>Date:</strong> {selectedRow.date}
               </p>
+            </div>
+            <div className="mt-6">
+              <h3 className="text-lg font-medium mb-2">Timeline</h3>
+              <div className="space-y-4">
+                {selectedRow.timeline.map((entry, index) => (
+                  <div key={index} className="border-l-2 border-blue-500 pl-4">
+                    <p className="text-sm text-gray-600">
+                      <strong>{entry.date}:</strong> {entry.description}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </div>
             <Button
               variant="outline"
