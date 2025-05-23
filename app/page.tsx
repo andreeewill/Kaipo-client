@@ -18,7 +18,7 @@ export default function Page() {
             </h1>
             <p className="mt-8 text-lg font-medium text-pretty text-gray-500 sm:text-xl/8">
               Projectnya tidur, ownernya kabur, dokternya takabur, developernya
-              nganggur tapi udah mulai kerja.
+              nganggur tapi udah mulai kerja, tapi boong.
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <a
