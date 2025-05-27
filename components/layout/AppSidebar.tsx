@@ -1,15 +1,6 @@
 "use client";
 import { useState } from "react";
-import {
-  Calendar,
-  Notebook,
-  // Inbox,
-  Search,
-  PersonStanding,
-  FileText,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+import { Calendar, Notebook, ChevronLeft, ChevronRight } from "lucide-react";
 
 import {
   useSidebar,
@@ -22,8 +13,8 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubItem,
+  // SidebarMenuSub,
+  // SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 

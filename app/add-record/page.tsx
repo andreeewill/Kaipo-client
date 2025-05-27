@@ -84,7 +84,7 @@ export default function AddRecord() {
             >
               Jenis Kelamin
             </label>
-            <select
+            {/* <select
               id="gender"
               name="gender"
               value={formData.gender}
@@ -95,7 +95,7 @@ export default function AddRecord() {
               <option value="">Pilih jenis kelamin</option>
               <option value="Male">Laki-laki</option>
               <option value="Female">Perempuan</option>
-            </select>
+            </select> */}
           </div>
 
           {/* Diagnosis */}

@@ -10,7 +10,6 @@ import {
   getDay,
   isSameDay,
   isToday,
-  parseISO,
 } from "date-fns";
 import { useState } from "react";
 import {
@@ -64,7 +63,7 @@ const generateDummyData = () => {
 const dummyData = generateDummyData();
 
 export default function CalendarPage() {
-  const [events, setEvents] = useState(dummyData);
+  const [events, ] = useState(dummyData);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
 
