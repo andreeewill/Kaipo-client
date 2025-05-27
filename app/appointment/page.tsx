@@ -13,7 +13,14 @@ import {
   parseISO,
 } from "date-fns";
 import { useState } from "react";
-import { Dialog } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
 // Date-fns localization setup
@@ -119,12 +126,12 @@ export default function CalendarPage() {
         <div className="flex gap-6">
           {/* Summary Section */}
           <div className="flex-1 p-6 border rounded-lg shadow-md bg-gray-50">
-            <h2 className="text-xl font-semibold mb-4">Today's Summary</h2>
+            <h2 className="text-xl font-semibold mb-4">Reservasi Hari ini</h2>
             <p className="text-gray-700 mb-6">
-              <strong>Date:</strong> {format(today, "MMMM dd, yyyy")}
+              <strong>Tanggal:</strong> {format(today, "MMMM dd, yyyy")}
             </p>
             <div>
-              <h3 className="text-lg font-medium mb-3">Scheduled Patients:</h3>
+              <h3 className="text-lg font-medium mb-3">Pasien Hari Ini:</h3>
               {todaysEvents.length > 0 ? (
                 <div className="space-y-3">
                   {todaysEvents.map((event, index) => (
@@ -148,13 +155,13 @@ export default function CalendarPage() {
                 </div>
               ) : (
                 <p className="text-gray-600">
-                  No patients scheduled for today.
+                  Tidak ada pasien yang dijadwalkan hari ini.
                 </p>
               )}
             </div>
             <div className="mt-6 p-6 bg-blue-100 border border-blue-300 rounded-lg text-center">
               <p className="text-lg font-medium text-gray-700 mb-2">
-                Total Patients Today
+                Total Pasien Hari Ini :
               </p>
               <p className="text-6xl font-bold text-blue-600">
                 {todaysEvents.length}
@@ -181,42 +188,70 @@ export default function CalendarPage() {
         </div>
 
         {/* Event Details Modal */}
-        {isModalOpen && selectedEvent && (
-          <Dialog open={isModalOpen} onClose={handleCloseModal}>
-            <div className="p-6">
-              <h2 className="text-xl font-bold mb-4">{selectedEvent.title}</h2>
-              <p>
-                <strong>Start:</strong>{" "}
-                {format(new Date(selectedEvent.start), "MMMM dd, yyyy hh:mm a")}
-              </p>
-              <p>
-                <strong>End:</strong>{" "}
-                {format(new Date(selectedEvent.end), "MMMM dd, yyyy hh:mm a")}
-              </p>
-              <p className="mt-4">
-                <strong>Description:</strong> {selectedEvent.description}
-              </p>
-              <div className="mt-6">
-                <h3 className="text-lg font-medium mb-2">Timeline</h3>
-                <div className="space-y-4">
-                  {selectedEvent.timeline
-                    .reverse() // Show latest events first
-                    .map((entry, index) => (
-                      <div
-                        key={index}
-                        className="border-l-2 border-blue-500 pl-4"
-                      >
-                        <p className="text-sm text-gray-600">
-                          <strong>{entry.date}:</strong> {entry.description}
-                        </p>
-                      </div>
-                    ))}
+        {selectedEvent && ( // Only render the Dialog if an event is selected
+          <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>{selectedEvent.title}</DialogTitle>
+                <DialogDescription>
+                  Details of the scheduled appointment.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <p className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Start:
+                  </p>
+                  <p className="col-span-3">
+                    {format(
+                      new Date(selectedEvent.start),
+                      "MMMM dd, yyyy hh:mm a"
+                    )}
+                  </p>
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <p className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    End:
+                  </p>
+                  <p className="col-span-3">
+                    {format(
+                      new Date(selectedEvent.end),
+                      "MMMM dd, yyyy hh:mm a"
+                    )}
+                  </p>
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <p className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Description:
+                  </p>
+                  <p className="col-span-3">{selectedEvent.description}</p>
                 </div>
               </div>
-              <div className="mt-6 text-right">
-                <Button onClick={handleCloseModal}>Close</Button>
+
+              <div className="mt-4">
+                <h3 className="text-lg font-medium mb-2">Timeline</h3>
+                <div className="space-y-4">
+                  {selectedEvent?.timeline &&
+                    selectedEvent.timeline
+                      .reverse() // Show latest events first
+                      .map((entry, index) => (
+                        <div
+                          key={index}
+                          className="border-l-2 border-blue-500 pl-4"
+                        >
+                          <p className="text-sm text-gray-600">
+                            <strong>{entry.date}:</strong> {entry.description}
+                          </p>
+                        </div>
+                      ))}
+                </div>
               </div>
-            </div>
+              <DialogFooter>
+                <Button className="cursor-pointer" onClick={handleCloseModal}>
+                  Close
+                </Button>
+              </DialogFooter>
+            </DialogContent>
           </Dialog>
         )}
       </div>

@@ -2,7 +2,7 @@
 import { useState } from "react";
 import {
   Calendar,
-  Home,
+  Notebook,
   // Inbox,
   Search,
   PersonStanding,
@@ -25,43 +25,23 @@ import {
   SidebarMenuSub,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button";
 
 import { usePathname } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link"; // Import Link for navigation
 
 // Menu items.
 const items = [
   {
-    title: "Calendar",
-    url: "/calendar",
+    title: "Reservasi Pasien",
+    url: "/appointment",
     icon: Calendar,
   },
   {
-    title: "Jadwal Pasien",
-    url: "/schedule",
-    icon: Home,
-  },
-  {
-    title: "Riwayat Pasien",
-    url: "/dashboard/history",
-    icon: Search,
-  },
-  {
     title: "Rekam Medis",
-    url: "/dashboard/medical-record",
-    icon: PersonStanding,
-    subItems: [
-      {
-        title: "Detail Rekam Medis",
-        url: "/dashboard/medical-record/detail",
-        icon: FileText,
-      },
-      {
-        title: "Riwayat Rekam Medis",
-        url: "/dashboard/medical-record/history",
-        icon: FileText,
-      },
-    ],
+    url: "/medical-record",
+    icon: Notebook,
   },
 ];
 
@@ -91,6 +71,13 @@ export function AppSidebar() {
               ></Image>
             </SidebarGroupLabel>
 
+            {/* "Tambah Rekam Medik" Button */}
+            <div className="p-4">
+              <Link href="/add-record" className="cursor-pointer">
+                <Button className="cursor-pointer">Tambah Rekam Medik</Button>
+              </Link>
+            </div>
+
             <SidebarGroupContent>
               <SidebarMenu>
                 {items.map((item) => (
@@ -104,7 +91,7 @@ export function AppSidebar() {
                         <span>{item.title}</span>
                       </a>
                     </SidebarMenuButton>
-                    {item.subItems && (
+                    {/* {item.subItems && (
                       <SidebarMenuSub>
                         {item.subItems.map((subItem) => (
                           <SidebarMenuSubItem
@@ -120,7 +107,7 @@ export function AppSidebar() {
                           </SidebarMenuSubItem>
                         ))}
                       </SidebarMenuSub>
-                    )}
+                    )} */}
                   </SidebarMenuItem>
                 ))}
               </SidebarMenu>
