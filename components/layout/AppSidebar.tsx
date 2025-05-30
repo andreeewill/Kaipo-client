@@ -20,14 +20,12 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  z,
 } from "@/components/ui/dialog";
 
 import AddRecordModalContent from "@/features/add-record/AddRecordModalContent"; // Import the modal content
 
 import { usePathname } from "next/navigation";
 import Image from "next/image";
-import Link from "next/link";
 
 // Menu items.
 const items = [

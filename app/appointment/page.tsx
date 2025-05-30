@@ -12,15 +12,6 @@ import {
   isToday,
 } from "date-fns";
 import { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogFooter,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 
 // Date-fns localization setup
 const locales = {
@@ -52,26 +43,12 @@ const generateDummyData = () => {
 
 const dummyData = generateDummyData();
 
-const CustomDateCell = ({ date, events }) => {
-  if (!date) return null; // Ensure date is valid
-
-  const eventsOnDay = events.filter((event) => isSameDay(event.start, date));
-  return (
-    <div className="relative h-full flex flex-col justify-between items-center p-2">
-      <span className="font-medium">{format(date, "d")}</span>
-      {eventsOnDay.length > 0 && (
-        <div className="bg-blue-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center mt-2">
-          {eventsOnDay.length}
-        </div>
-      )}
-    </div>
-  );
-};
-
 export default function CalendarPage() {
   const [events] = useState(dummyData);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  console.log("🚀 ~ CalendarPage ~ isModalOpen:", isModalOpen);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  console.log("🚀 ~ CalendarPage ~ selectedEvent:", selectedEvent);
 
   const handleSelectSlot = ({ start, end }) => {
     setSelectedEvent({ title: "", start, end, description: "" });
@@ -81,11 +58,6 @@ export default function CalendarPage() {
   const handleEventClick = (event) => {
     setSelectedEvent(event);
     setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedEvent(null);
   };
 
   const today = new Date();
