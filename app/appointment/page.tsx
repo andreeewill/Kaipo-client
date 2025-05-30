@@ -45,16 +45,6 @@ const generateDummyData = () => {
       start: new Date(`2025-05-${String(day).padStart(2, "0")}T09:00:00`),
       end: new Date(`2025-05-${String(day).padStart(2, "0")}T10:00:00`),
       description: `Routine check-up with Doctor ${Math.ceil(i / 10)}`,
-      timeline: [
-        {
-          date: `2025-04-${String((day % 30) + 1).padStart(2, "0")}`,
-          description: `Visited for check-up with Doctor ${Math.ceil(i / 10)}`,
-        },
-        {
-          date: `2025-03-${String((day % 30) + 5).padStart(2, "0")}`,
-          description: `Follow-up for Diagnosis ${i}`,
-        },
-      ],
     });
   }
   return data;
@@ -62,8 +52,24 @@ const generateDummyData = () => {
 
 const dummyData = generateDummyData();
 
+const CustomDateCell = ({ date, events }) => {
+  if (!date) return null; // Ensure date is valid
+
+  const eventsOnDay = events.filter((event) => isSameDay(event.start, date));
+  return (
+    <div className="relative h-full flex flex-col justify-between items-center p-2">
+      <span className="font-medium">{format(date, "d")}</span>
+      {eventsOnDay.length > 0 && (
+        <div className="bg-blue-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center mt-2">
+          {eventsOnDay.length}
+        </div>
+      )}
+    </div>
+  );
+};
+
 export default function CalendarPage() {
-  const [events, ] = useState(dummyData);
+  const [events] = useState(dummyData);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
 
@@ -85,7 +91,6 @@ export default function CalendarPage() {
   const today = new Date();
   const todaysEvents = events.filter((event) => isSameDay(event.start, today));
 
-  // Custom event rendering to show the number of appointments
   const eventPropGetter = (event) => {
     return {
       style: {
@@ -95,24 +100,6 @@ export default function CalendarPage() {
         padding: "5px",
         textAlign: "center",
       },
-    };
-  };
-
-  // Custom day rendering to show the number of appointments
-  const dayPropGetter = (date) => {
-    const eventsOnDay = events.filter((event) => isSameDay(event.start, date));
-    return {
-      className: isToday(date) ? "bg-lime-500" : "",
-      children: (
-        <div className="relative">
-          <span>{format(date, "d")}</span>
-          {eventsOnDay.length > 0 && (
-            <div className="absolute top-0 right-0 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-              {eventsOnDay.length}
-            </div>
-          )}
-        </div>
-      ),
     };
   };
 
@@ -180,79 +167,33 @@ export default function CalendarPage() {
               onSelectSlot={handleSelectSlot}
               onSelectEvent={(event) => handleEventClick(event)}
               eventPropGetter={eventPropGetter}
-              dayPropGetter={dayPropGetter}
+              components={{
+                month: {
+                  dateContent: (props) => {
+                    const { date } = props;
+                    const eventsOnDay = events.filter((event) =>
+                      isSameDay(event.start, date)
+                    );
+
+                    return (
+                      <div className="flex flex-col items-center justify-center h-full p-1">
+                        <span className="text-sm font-medium">
+                          {format(date, "d")}
+                        </span>
+                        {eventsOnDay.length > 0 && (
+                          <div className="mt-1 bg-blue-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center">
+                            {eventsOnDay.length}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  },
+                },
+              }}
               className="border rounded-lg shadow-md"
             />
           </div>
         </div>
-
-        {/* Event Details Modal */}
-        {selectedEvent && ( // Only render the Dialog if an event is selected
-          <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>{selectedEvent.title}</DialogTitle>
-                <DialogDescription>
-                  Details of the scheduled appointment.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <p className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                    Start:
-                  </p>
-                  <p className="col-span-3">
-                    {format(
-                      new Date(selectedEvent.start),
-                      "MMMM dd, yyyy hh:mm a"
-                    )}
-                  </p>
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <p className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                    End:
-                  </p>
-                  <p className="col-span-3">
-                    {format(
-                      new Date(selectedEvent.end),
-                      "MMMM dd, yyyy hh:mm a"
-                    )}
-                  </p>
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <p className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                    Description:
-                  </p>
-                  <p className="col-span-3">{selectedEvent.description}</p>
-                </div>
-              </div>
-
-              <div className="mt-4">
-                <h3 className="text-lg font-medium mb-2">Timeline</h3>
-                <div className="space-y-4">
-                  {selectedEvent?.timeline &&
-                    selectedEvent.timeline
-                      .reverse() // Show latest events first
-                      .map((entry, index) => (
-                        <div
-                          key={index}
-                          className="border-l-2 border-blue-500 pl-4"
-                        >
-                          <p className="text-sm text-gray-600">
-                            <strong>{entry.date}:</strong> {entry.description}
-                          </p>
-                        </div>
-                      ))}
-                </div>
-              </div>
-              <DialogFooter>
-                <Button className="cursor-pointer" onClick={handleCloseModal}>
-                  Close
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        )}
       </div>
     </Layout>
   );

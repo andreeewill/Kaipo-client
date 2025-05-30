@@ -1,11 +1,11 @@
 "use client";
+
 import { useState } from "react";
 import { Calendar, Notebook, ChevronLeft, ChevronRight } from "lucide-react";
 
 import {
   useSidebar,
   Sidebar,
-  // SidebarTrigger,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
@@ -13,14 +13,21 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  // SidebarMenuSub,
-  // SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  z,
+} from "@/components/ui/dialog";
+
+import AddRecordModalContent from "@/features/add-record/AddRecordModalContent"; // Import the modal content
 
 import { usePathname } from "next/navigation";
 import Image from "next/image";
-import Link from "next/link"; // Import Link for navigation
+import Link from "next/link";
 
 // Menu items.
 const items = [
@@ -39,7 +46,7 @@ const items = [
 export function AppSidebar() {
   const pathname = usePathname();
   const { open, toggleSidebar } = useSidebar();
-
+  const [isModalOpen, setIsModalOpen] = useState(false); // State to control modal visibility
   const [isSidebarOpen] = useState(true);
 
   const isActive = (url: string) => {
@@ -62,11 +69,14 @@ export function AppSidebar() {
               ></Image>
             </SidebarGroupLabel>
 
-            {/* "Tambah Rekam Medik" Button */}
+            {/* "Tambah Jadwal Pertemuan" Button */}
             <div className="p-4">
-              <Link href="/add-record" className="cursor-pointer">
-                <Button className="cursor-pointer">Tambah Rekam Medik</Button>
-              </Link>
+              <Button
+                className="cursor-pointer"
+                onClick={() => setIsModalOpen(true)} // Open the modal
+              >
+                Tambah Jadwal Pertemuan
+              </Button>
             </div>
 
             <SidebarGroupContent>
@@ -82,32 +92,23 @@ export function AppSidebar() {
                         <span>{item.title}</span>
                       </a>
                     </SidebarMenuButton>
-                    {/* {item.subItems && (
-                      <SidebarMenuSub>
-                        {item.subItems.map((subItem) => (
-                          <SidebarMenuSubItem
-                            key={subItem.title}
-                            className={isActive(subItem.url) ? "active" : ""}
-                          >
-                            <SidebarMenuButton asChild>
-                              <a href={subItem.url}>
-                                <subItem.icon />
-                                <span>{subItem.title}</span>
-                              </a>
-                            </SidebarMenuButton>
-                          </SidebarMenuSubItem>
-                        ))}
-                      </SidebarMenuSub>
-                    )} */}
                   </SidebarMenuItem>
                 ))}
               </SidebarMenu>
             </SidebarGroupContent>
-
-            {/* <SidebarTrigger/> */}
           </SidebarGroup>
         </SidebarContent>
       </Sidebar>
+
+      {/* Modal for "Tambah Jadwal Pertemuan" */}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="sm:max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>Tambah Jadwal Pertemuan</DialogTitle>
+          </DialogHeader>
+          <AddRecordModalContent onClose={() => setIsModalOpen(false)} />
+        </DialogContent>
+      </Dialog>
 
       <button
         onClick={toggleSidebar}
