@@ -113,7 +113,11 @@ export default function AddRecordModalContent({
                     <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent align="start" className="w-auto p-0">
+                <PopoverContent
+                  align="start"
+                  className="w-auto p-0"
+                  onInteractOutside={(e) => e.preventDefault()} // Prevent closing on interaction
+                >
                   <div className="p-4">
                     <Calendar
                       mode="single"

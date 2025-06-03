@@ -9,7 +9,6 @@ import {
   startOfWeek,
   getDay,
   isSameDay,
-  isToday,
 } from "date-fns";
 import { useState } from "react";
 import {
@@ -37,21 +36,37 @@ const localizer = dateFnsLocalizer({
 // Generate dummy data for the calendar
 const generateDummyData = () => {
   const data = [];
-  for (let i = 1; i <= 100; i++) {
-    const day = (i % 31) + 1; // Distribute patients across days in May
+  for (let i = 1; i <= 150; i++) {
+    // Increase the number of events
+    const month = Math.ceil(i / 50) + 4; // Distribute events across May (5), June (6), and July (7)
+    const day = (i % 31) + 1; // Ensure the day is within the valid range for each month
     data.push({
       id: i,
       title: `Patient ${i}`,
-      start: new Date(`2025-05-${String(day).padStart(2, "0")}T09:00:00`),
-      end: new Date(`2025-05-${String(day).padStart(2, "0")}T10:00:00`),
+      start: new Date(
+        `2025-${String(month).padStart(2, "0")}-${String(day).padStart(
+          2,
+          "0"
+        )}T09:00:00`
+      ),
+      end: new Date(
+        `2025-${String(month).padStart(2, "0")}-${String(day).padStart(
+          2,
+          "0"
+        )}T10:00:00`
+      ),
       description: `Routine check-up with Doctor ${Math.ceil(i / 10)}`,
       timeline: [
         {
-          date: `2025-04-${String((day % 30) + 1).padStart(2, "0")}`,
+          date: `2025-${String(month - 1).padStart(2, "0")}-${String(
+            (day % 30) + 1
+          ).padStart(2, "0")}`,
           description: `Visited for check-up with Doctor ${Math.ceil(i / 10)}`,
         },
         {
-          date: `2025-03-${String((day % 30) + 5).padStart(2, "0")}`,
+          date: `2025-${String(month - 2).padStart(2, "0")}-${String(
+            (day % 30) + 5
+          ).padStart(2, "0")}`,
           description: `Follow-up for Diagnosis ${i}`,
         },
       ],
@@ -84,19 +99,6 @@ export default function CalendarPage() {
 
   const today = new Date();
   const todaysEvents = events.filter((event) => isSameDay(event.start, today));
-
-  // Custom event rendering to show the number of appointments
-  const eventPropGetter = (event) => {
-    return {
-      style: {
-        backgroundColor: isToday(event.start) ? "#6299ff" : "#3174ad", // Highlight today's events
-        color: "white",
-        borderRadius: "5px",
-        padding: "5px",
-        textAlign: "center",
-      },
-    };
-  };
 
   return (
     <Layout>
@@ -162,7 +164,16 @@ export default function CalendarPage() {
               views={["month"]} // Restrict to "Month" view only
               onSelectSlot={handleSelectSlot}
               onSelectEvent={(event) => handleEventClick(event)}
-              eventPropGetter={eventPropGetter}
+              components={{
+                event: ({ event }) => (
+                  <span>
+                    <strong>{event.title}</strong>
+                    <br />
+                  </span>
+                ),
+              }}
+              // eventPropGetter={eventPropGetter}
+              // dayPropGetter={dayPropGetter} // Use dayPropGetter for custom day cell rendering
               className="border rounded-lg shadow-md"
             />
           </div>
