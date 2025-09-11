@@ -1,7 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { Calendar, Notebook, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  CircuitBoard,
+  Calendar,
+  Notebook,
+  ChevronLeft,
+  ChevronRight,
+  Stethoscope,
+  CreditCard,
+} from "lucide-react";
 
 import {
   useSidebar,
@@ -30,13 +38,33 @@ import Image from "next/image";
 // Menu items.
 const items = [
   {
+    title: "Dashboard",
+    url: "/dashboard",
+    icon: CircuitBoard,
+  },
+  {
+    title: "Calendar",
+    url: "/calendar",
+    icon: Calendar,
+  },
+  {
     title: "Reservasi Pasien",
     url: "/appointment",
-    icon: Calendar,
+    icon: Notebook,
   },
   {
     title: "Rekam Medis",
     url: "/medical-record",
+    icon: Stethoscope,
+  },
+  {
+    title: "Pembayaran",
+    url: "/payment",
+    icon: CreditCard,
+  },
+  {
+    title: "Laporan",
+    url: "/report",
     icon: Notebook,
   },
 ];

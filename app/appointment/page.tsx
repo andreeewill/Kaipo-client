@@ -1,6 +1,9 @@
 "use client";
 
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Layout } from "@/components/layout/Layout";
+import useAuthStore from '@/app/store/authStore'
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css"; // Import default styles
 import {
@@ -78,9 +81,18 @@ const generateDummyData = () => {
 const dummyData = generateDummyData();
 
 export default function CalendarPage() {
+  const { isAuthenticated } = useAuthStore()
+  const router = useRouter()
   const [events] = useState(dummyData);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
+
+  useEffect(() => {
+    // Redirect to login if not authenticated
+    if (!isAuthenticated) {
+      router.push('/login')
+    }
+  }, [isAuthenticated, router])
 
   const handleSelectSlot = ({ start, end }) => {
     setSelectedEvent({ title: "", start, end, description: "" });

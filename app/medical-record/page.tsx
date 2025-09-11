@@ -1,6 +1,8 @@
 "use client";
 import { Layout } from "@/components/layout/Layout";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from 'next/navigation'
+import useAuthStore from '@/app/store/authStore'
 import {
   Table,
   TableBody,
@@ -44,6 +46,8 @@ const generateDummyData = () => {
 const dummyData = generateDummyData();
 
 export default function Schedule() {
+  const { isAuthenticated } = useAuthStore()
+  const router = useRouter()
   const [selected] = useState("Jadwal Pasien");
   const [search, setSearch] = useState("");
   const [sortColumn, setSortColumn] = useState("id");
@@ -52,6 +56,13 @@ export default function Schedule() {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedDate, setSelectedDate] = useState("2025-05-01");
   const rowsPerPage = 10;
+
+  useEffect(() => {
+    // Redirect to login if not authenticated
+    if (!isAuthenticated) {
+      router.push('/login')
+    }
+  }, [isAuthenticated, router])
 
   const handleSort = (column: string) => {
     if (sortColumn === column) {
