@@ -3,18 +3,19 @@
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import useAuthStore from "@/app/store/authStore";
-import Toast from "@/components/Toast";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import { toast } from "sonner";
 
-interface ToastState {
-  message: string;
-  type: "error" | "success" | "info" | "warning";
-}
+// Removed ToastState interface as we're using Sonner now
 
 function LoginPageContent() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [toast, setToast] = useState<ToastState | null>(null);
+  // Development toggle - set to true to bypass actual authentication
+  const [devMode, setDevMode] = useState(true);
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -24,18 +25,39 @@ function LoginPageContent() {
     // Check for Google OAuth error
     const error = searchParams.get("error");
     if (error === "google_failed") {
-      setToast({
-        message: "Google login failed. Please try again.",
-        type: "error",
-      });
+      toast.error("Google login failed. Please try again.");
     }
   }, [searchParams]);
+
+  // Set dev_mode cookie whenever devMode changes
+  useEffect(() => {
+    document.cookie = `dev_mode=${devMode}; path=/; max-age=${60*60*24*30}`; // 30 days
+  }, [devMode]);
 
   const handleBasicLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setToast(null);
 
+    // In development mode, bypass actual authentication
+    console.log("🚀 ~ handleBasicLogin ~ devMode:", devMode)
+    if (devMode) {
+      // Set dev_mode cookie for middleware
+      document.cookie = `dev_mode=true; path=/; max-age=${60*60*24*30}`; // 30 days
+      
+      // Simulate a short delay for better UX
+      setTimeout(() => {
+        setAuthenticated(true);
+        toast.success("Development mode: Login successful");
+        router.push("/dashboard");
+        setIsLoading(false);
+      }, 500);
+      return;
+    } else {
+      // Clear dev_mode cookie when not in dev mode
+      document.cookie = `dev_mode=false; path=/; max-age=${60*60*24*30}`; // 30 days
+    }
+
+    // Real authentication flow for production
     try {
       const response = await fetch("https://api.kaipo.my.id/auth/login", {
         method: "POST",
@@ -43,25 +65,24 @@ function LoginPageContent() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, password }),
-        // credentials: "include", // Important for cookies
+        credentials: "include", // Important for cookies
       });
 
       if (response.status === 204) {
         // Success - JWT cookie is set
-        setAuthenticated(true);
-        router.push("/dashboard");
+        console.log("LOGIN SUCCESS");
+        
+        // Wait a bit for cookie to be set, then update auth state
+        setTimeout(() => {
+          setAuthenticated(true);
+          router.push("/dashboard");
+        }, 100);
       } else {
         // Login failed
-        setToast({
-          message: "Invalid email or password. Please try again.",
-          type: "error",
-        });
+        toast.error("Invalid email or password. Please try again.");
       }
     } catch (error) {
-      setToast({
-        message: "Network error. Please check your connection and try again.",
-        type: "error",
-      });
+      toast.error("Network error. Please check your connection and try again.");
     } finally {
       setIsLoading(false);
     }
@@ -76,14 +97,6 @@ function LoginPageContent() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={() => setToast(null)}
-        />
-      )}
-
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
@@ -104,7 +117,7 @@ function LoginPageContent() {
                 Email address
               </label>
               <div className="mt-1">
-                <input
+                <Input
                   id="email"
                   name="email"
                   type="email"
@@ -112,7 +125,6 @@ function LoginPageContent() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   placeholder="Enter your email"
                 />
               </div>
@@ -126,7 +138,7 @@ function LoginPageContent() {
                 Password
               </label>
               <div className="mt-1">
-                <input
+                <Input
                   id="password"
                   name="password"
                   type="password"
@@ -134,17 +146,35 @@ function LoginPageContent() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   placeholder="Enter your password"
                 />
               </div>
             </div>
 
-            <div>
-              <button
+            <div className="flex flex-col space-y-3">
+              {/* Development mode toggle */}
+              <div className="flex items-center justify-between text-sm">
+                <label htmlFor="devMode" className="flex items-center text-gray-700">
+                  <input
+                    id="devMode"
+                    type="checkbox"
+                    checked={devMode}
+                    onChange={(e) => setDevMode(e.target.checked)}
+                    className="h-4 w-4 mr-2 rounded text-blue-600"
+                  />
+                  Development Mode
+                </label>
+                {devMode && (
+                  <span className="text-green-600 text-xs">
+                    Authentication bypassed - any credentials will work
+                  </span>
+                )}
+              </div>
+
+              <Button
                 type="submit"
                 disabled={isLoading}
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="w-full"
               >
                 {isLoading ? (
                   <div className="flex items-center">
@@ -173,12 +203,12 @@ function LoginPageContent() {
                 ) : (
                   "Sign in"
                 )}
-              </button>
+              </Button>
             </div>
 
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
+                <Separator />
               </div>
               <div className="relative flex justify-center text-sm">
                 <span className="px-2 bg-white text-gray-500">
@@ -188,10 +218,11 @@ function LoginPageContent() {
             </div>
 
             <div>
-              <button
+              <Button
                 type="button"
+                variant="outline"
                 onClick={handleGoogleLogin}
-                className="group relative w-full flex justify-center py-2 px-4 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                className="w-full"
               >
                 <div className="flex items-center">
                   <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24">
@@ -214,7 +245,7 @@ function LoginPageContent() {
                   </svg>
                   Sign in with Google
                 </div>
-              </button>
+              </Button>
             </div>
           </form>
         </div>

@@ -1,13 +1,17 @@
 import { AppSidebar } from "./AppSidebar";
-import { SidebarProvider } from "@/components/ui/sidebar";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ display: "flex" }}>
-      <SidebarProvider>
-        <AppSidebar />
-        <main className="p-10 pl-16">{children}</main>
-      </SidebarProvider>
+    <div className="flex h-screen bg-gray-50">
+      <AppSidebar />
+      {/* Main content area with responsive padding that adjusts to sidebar */}
+      <main className="flex-1 overflow-auto transition-all duration-300" style={{
+        marginLeft: 'var(--sidebar-width, 64px)' // Default mobile width
+      }}>
+        <div className="p-4 md:p-6 lg:p-8">
+          {children}
+        </div>
+      </main>
     </div>
   );
 }

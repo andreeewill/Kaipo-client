@@ -21,6 +21,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
         })
 
         if (response.ok) {
+          // Authentication successful, this will trigger JWT decoding in the store
           setAuthenticated(true)
         } else {
           setAuthenticated(false)

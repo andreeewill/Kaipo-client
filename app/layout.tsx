@@ -1,6 +1,8 @@
 import React from "react";
 import "../styles/globals.css";
 import AuthProvider from "@/components/AuthProvider";
+import { Toaster } from "@/components/ui/toast";
+import { QueryProvider } from "@/lib/queries";
 
 export default function RootLayout({
   children,
@@ -10,9 +12,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="">
-        <AuthProvider>
+        <QueryProvider>
+          {/* <AuthProvider> */}
           {children}
-        </AuthProvider>
+          <Toaster />
+          {/* </AuthProvider> */}
+        </QueryProvider>
       </body>
     </html>
   );

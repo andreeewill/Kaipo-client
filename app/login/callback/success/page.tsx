@@ -27,15 +27,19 @@ function GoogleCallbackContent() {
           `https://api.kaipo.my.id/auth/google/code-exchange?code=${code}&redirect_url=${redirectUrl}`,
           {
             method: "GET",
-            // credentials: "include", // Important for cookies
+            // credentials: "include", // Re-enable to receive cookies
           }
         );
 
         if (response.status === 204) {
           // Success - JWT cookie is set
-          setAuthenticated(true);
-          console.log("AUTH SUCCESS")
-          router.push("/dashboard");
+          console.log("AUTH SUCCESS");
+          
+          // Wait a bit for cookie to be set, then update auth state
+          setTimeout(() => {
+            setAuthenticated(true);
+            router.push("/dashboard");
+          }, 100);
         } else {
           // Exchange failed
           router.push("/login?error=google_failed");

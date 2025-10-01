@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from "next/image"
 import useAuthStore from '@/app/store/authStore'
+import { Button } from "@/components/ui/button"
 
 export default function Page() {
   const { isAuthenticated } = useAuthStore()
@@ -11,9 +12,9 @@ export default function Page() {
 
   useEffect(() => {
     // Redirect to dashboard if already authenticated
-    if (isAuthenticated) {
-      router.push('/dashboard')
-    }
+    // if (isAuthenticated) {
+    //   router.push('/dashboard')
+    // }
   }, [isAuthenticated, router])
 
   const handleLogin = () => {
@@ -39,18 +40,20 @@ export default function Page() {
               Your healthcare management platform. Please log in to access your dashboard and manage your medical records.
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
-              <button
+              <Button
                 onClick={handleLogin}
-                className="rounded-md bg-blue-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-blue-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 transition-colors"
+                size="lg"
               >
                 Login to Dashboard
-              </button>
-              <a 
-                href="/about" 
-                className="text-sm/6 font-semibold text-gray-900 hover:text-gray-700 transition-colors"
+              </Button>
+              <Button
+                variant="ghost"
+                asChild
               >
-                Learn More <span aria-hidden="true">→</span>
-              </a>
+                <a href="/about">
+                  Learn More <span aria-hidden="true">→</span>
+                </a>
+              </Button>
             </div>
           </div>
         </div>

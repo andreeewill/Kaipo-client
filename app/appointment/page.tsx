@@ -89,9 +89,9 @@ export default function CalendarPage() {
 
   useEffect(() => {
     // Redirect to login if not authenticated
-    if (!isAuthenticated) {
-      router.push('/login')
-    }
+    // if (!isAuthenticated) {
+    //   router.push('/login')
+    // }
   }, [isAuthenticated, router])
 
   const handleSelectSlot = ({ start, end }) => {

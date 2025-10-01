@@ -1,38 +1,164 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import useAuthStore from '@/app/store/authStore'
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import useAuthStore from "@/app/store/authStore";
+import { Button } from "@/components/ui/button";
+import { DashboardStats } from "@/components/DashboardStats";
+import { RecentActivity } from "@/components/RecentActivity";
+import { AddMedicalRecordDemo } from "@/components/AddMedicalRecordDemo";
+import { PatientSummary } from "@/components/PatientSummary";
+import { Layout } from "@/components/layout/Layout";
+import { Calendar } from "@/components/ui/calendar";
+import { Status, Patient } from "@/types/patient";
+import { format } from "date-fns";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+// Patient Status System
+const PATIENT_STATUSES: Status[] = [
+  {
+    id: "registered",
+    label: "Registered",
+    color: "bg-gray-500",
+    bgColor: "bg-gray-50",
+    textColor: "text-gray-700",
+  },
+  {
+    id: "approved",
+    label: "Approved by Nurse",
+    color: "bg-blue-500",
+    bgColor: "bg-blue-50",
+    textColor: "text-blue-700",
+  },
+  {
+    id: "examining",
+    label: "In Examining Room",
+    color: "bg-yellow-500",
+    bgColor: "bg-yellow-50",
+    textColor: "text-yellow-700",
+  },
+  {
+    id: "payment",
+    label: "Pending Payment",
+    color: "bg-orange-500",
+    bgColor: "bg-orange-50",
+    textColor: "text-orange-700",
+  },
+  {
+    id: "done",
+    label: "Done",
+    color: "bg-green-500",
+    bgColor: "bg-green-50",
+    textColor: "text-green-700",
+  },
+];
+
+// Generate dummy patient data for dashboard
+const generateDashboardPatientData = (): Patient[] => {
+  const data = [];
+  const conditions = ["Hypertension", "Diabetes", "Asthma", "Arthritis", "Migraine"];
+  const doctors = ["Dr. Smith", "Dr. Johnson", "Dr. Williams", "Dr. Brown"];
+
+  for (let i = 1; i <= 30; i++) {
+    const today = new Date();
+    const randomDays = Math.floor(Math.random() * 7) - 3; // -3 to +3 days from today
+    const appointmentDate = new Date(today);
+    appointmentDate.setDate(today.getDate() + randomDays);
+    
+    data.push({
+      id: i,
+      name: `Patient ${i}`,
+      age: Math.floor(Math.random() * 60) + 20,
+      gender: i % 2 === 0 ? "Male" : "Female",
+      diagnosis: conditions[i % conditions.length],
+      doctor: doctors[i % doctors.length],
+      date: format(appointmentDate, "yyyy-MM-dd"),
+      status: PATIENT_STATUSES[i % PATIENT_STATUSES.length].id,
+      medicalRecord: {
+        patientId: `P${String(i).padStart(4, "0")}`,
+        bloodType: ["A+", "B+", "AB+", "O+"][i % 4],
+        allergies: ["None", "Penicillin"][i % 2],
+        emergencyContact: {
+          name: `Contact ${i}`,
+          relationship: "Family",
+          phone: "+1-555-0100",
+        },
+        insurance: {
+          provider: "Health Insurance",
+          policyNumber: `POL${i}`,
+        },
+        currentMedications: [],
+        vitals: {
+          height: "170 cm",
+          weight: "70 kg",
+          bloodPressure: "120/80",
+          heartRate: "72 bpm",
+          temperature: "36.5°C",
+        },
+      },
+      timeline: [],
+    });
+  }
+  return data;
+};
 
 export default function DashboardPage() {
-  const { isAuthenticated, setAuthenticated } = useAuthStore()
-  const router = useRouter()
-  const [isLoading, setIsLoading] = useState(true)
+  const { isAuthenticated, userInfo, logout } = useAuthStore();
+  console.log("🚀 ~ DashboardPage ~ isAuthenticated:", isAuthenticated)
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const [selectedRole, setSelectedRole] = useState<string>("doctor");
+  const [patientData] = useState<Patient[]>(generateDashboardPatientData());
+  const currentDateString = format(new Date(), "yyyy-MM-dd");
+
+  // Development mode toggle for middleware
+  const [devMode, setDevMode] = useState(() => {
+    // Initialize from cookie if in browser
+    if (typeof document !== 'undefined') {
+      const cookie = document.cookie.split('; ').find(row => row.startsWith('dev_mode='));
+      return cookie ? cookie.split('=')[1] === 'true' : true; // Default to true if no cookie
+    }
+    return true; // Default to true
+  });
 
   useEffect(() => {
-    // Check authentication status on page load
-    if (!isAuthenticated) {
+    // In production mode, check authentication status
+    if (!devMode && !isAuthenticated) {
       router.push('/login')
       return
     }
-    setIsLoading(false)
-  }, [isAuthenticated, router])
+    setIsLoading(false);
+  }, [isAuthenticated, router, devMode]);
+  
+  // Handle dev mode toggle
+  const handleDevModeChange = (enabled: boolean) => {
+    setDevMode(enabled);
+    // Set cookie for middleware
+    document.cookie = `dev_mode=${enabled}; path=/; max-age=${60*60*24*30}`; // 30 days
+  };
 
   const handleLogout = async () => {
     try {
       // Call logout endpoint to clear JWT cookie
-      await fetch('https://api.kaipo.my.id/auth/logout', {
-        method: 'POST',
-        credentials: 'include',
-      })
+      await fetch("https://api.kaipo.my.id/auth/logout", {
+        method: "POST",
+        // credentials: 'include',
+      });
     } catch (error) {
-      console.error('Logout error:', error)
+      console.error("Logout error:", error);
     } finally {
       // Clear local state regardless of API call result
-      setAuthenticated(false)
-      router.push('/login')
+      logout();
+      // router.push('/login')
     }
-  }
+  };
 
   if (isLoading) {
     return (
@@ -42,29 +168,120 @@ export default function DashboardPage() {
           <p className="mt-4 text-gray-600">Loading dashboard...</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <Layout>
+      {/* Development Toggle Banner */}
+      <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 -mx-4 md:-mx-6 lg:-mx-8 mb-6">
+        <div className="flex items-center justify-between px-4">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <svg
+                className="h-5 w-5 text-yellow-400"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <p className="text-sm text-yellow-700">
+                <strong>Development Mode:</strong> Authentication is{" "}
+                <span
+                  className={
+                    devMode
+                      ? "text-green-600 font-semibold"
+                      : "text-red-600 font-semibold"
+                  }
+                >
+                  {devMode ? "DISABLED (Dev Mode)" : "ENABLED (Production)"}
+                </span>
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center space-x-3">
+            <label className="flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={devMode}
+                onChange={(e) => handleDevModeChange(e.target.checked)}
+                className="sr-only"
+              />
+              <div className="relative">
+                <div
+                  className={`block w-14 h-8 rounded-full ${
+                    devMode ? "bg-green-600" : "bg-gray-300"
+                  }`}
+                ></div>
+                <div
+                  className={`absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition ${
+                    devMode ? "transform translate-x-6" : ""
+                  }`}
+                ></div>
+              </div>
+              <span className="ml-3 text-sm text-yellow-700">Development Mode</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
       {/* Navigation Header */}
       <nav className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <h1 className="text-xl font-semibold text-gray-900">Kaipo Dashboard</h1>
+              <h1 className="text-xl font-semibold text-gray-900">
+                Serenity Health Clinic
+              </h1>
             </div>
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">Welcome back!</span>
-              <button
-                onClick={handleLogout}
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
-              >
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              <div className="flex items-center space-x-3">
+                <span className="text-sm text-gray-600">Login as:</span>
+                <Select value={selectedRole} onValueChange={setSelectedRole}>
+                  <SelectTrigger className="w-32">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="doctor">Doctor</SelectItem>
+                    <SelectItem value="nurse">Nurse</SelectItem>
+                    <SelectItem value="admin">Admin</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="text-sm text-gray-600">
+                {userInfo ? (
+                  <div className="flex items-center space-x-2">
+                    <span>Welcome, {userInfo.sub}!</span>
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                      {userInfo.role.join(", ")}
+                    </span>
+                  </div>
+                ) : (
+                  <span>Welcome back!</span>
+                )}
+              </div>
+              <Button onClick={handleLogout} variant="destructive">
+                <svg
+                  className="w-4 h-4 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                  />
                 </svg>
                 Logout
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -80,17 +297,49 @@ export default function DashboardPage() {
                 Welcome to Kaipo! 🎉
               </h2>
               <p className="text-gray-600 mb-4">
-                You have successfully logged in to your dashboard. This is a protected page that requires authentication.
+                {!devMode
+                  ? "You have successfully logged in to your dashboard. This is a protected page that requires authentication."
+                  : "You're viewing the dashboard in development mode. Authentication is currently disabled for easier testing."}
               </p>
-              <div className="bg-green-50 border border-green-200 rounded-md p-4">
+              <div
+                className={`border rounded-md p-4 ${
+                  !devMode
+                    ? "bg-green-50 border-green-200"
+                    : "bg-blue-50 border-blue-200"
+                }`}
+              >
                 <div className="flex">
-                  <svg className="w-5 h-5 text-green-400 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  <svg
+                    className={`w-5 h-5 mr-2 mt-0.5 ${
+                      !devMode ? "text-green-400" : "text-blue-400"
+                    }`}
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                   <div>
-                    <h3 className="text-sm font-medium text-green-800">Authentication Successful</h3>
-                    <p className="text-sm text-green-700 mt-1">
-                      Your JWT token has been set and you&apos;re now logged in.
+                    <h3
+                      className={`text-sm font-medium ${
+                        !devMode ? "text-green-800" : "text-blue-800"
+                      }`}
+                    >
+                      {!devMode
+                        ? "Authentication Required"
+                        : "Development Mode Active"}
+                    </h3>
+                    <p
+                      className={`text-sm mt-1 ${
+                        !devMode ? "text-green-700" : "text-blue-700"
+                      }`}
+                    >
+                      {!devMode
+                        ? "Your JWT token has been set and you're now logged in."
+                        : "Authentication is disabled. You can access this page without logging in."}
                     </p>
                   </div>
                 </div>
@@ -98,118 +347,79 @@ export default function DashboardPage() {
             </div>
           </div>
 
+          {/* User Information Section */}
+          {userInfo && (
+            <div className="bg-white overflow-hidden shadow rounded-lg mb-6">
+              <div className="px-4 py-5 sm:p-6">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">
+                  User Information
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <dt className="text-sm font-medium text-gray-500">Email</dt>
+                    <dd className="mt-1 text-sm text-gray-900">
+                      {userInfo.sub}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm font-medium text-gray-500">Role</dt>
+                    <dd className="mt-1">
+                      {userInfo.role.map((role, index) => (
+                        <span
+                          key={index}
+                          className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mr-1"
+                        >
+                          {role}
+                        </span>
+                      ))}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm font-medium text-gray-500">
+                      Token Issued
+                    </dt>
+                    <dd className="mt-1 text-sm text-gray-900">
+                      {new Date(userInfo.iat * 1000).toLocaleString()}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm font-medium text-gray-500">
+                      Token Expires
+                    </dt>
+                    <dd className="mt-1 text-sm text-gray-900">
+                      {new Date(userInfo.exp * 1000).toLocaleString()}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm font-medium text-gray-500">
+                      Issuer
+                    </dt>
+                    <dd className="mt-1 text-sm text-gray-900">
+                      {userInfo.iss}
+                    </dd>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Patient Summary Section */}
+          <PatientSummary
+            selectedDate={currentDateString}
+            patientData={patientData}
+            statuses={PATIENT_STATUSES}
+          />
+
           {/* Dashboard Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Stats Card 1 */}
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <svg className="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-                    </svg>
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">Active Users</dt>
-                      <dd className="text-lg font-medium text-gray-900">1,234</dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Stats Card 2 */}
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <svg className="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                    </svg>
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">Revenue</dt>
-                      <dd className="text-lg font-medium text-gray-900">$12,345</dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Stats Card 3 */}
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <svg className="h-6 w-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                    </svg>
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">Growth</dt>
-                      <dd className="text-lg font-medium text-gray-900">+12.5%</dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <DashboardStats />
 
           {/* Recent Activity */}
-          <div className="bg-white shadow rounded-lg mt-6">
-            <div className="px-4 py-5 sm:p-6">
-              <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
-                Recent Activity
-              </h3>
-              <div className="flow-root">
-                <ul className="-mb-8">
-                  {[
-                    { id: 1, action: 'Logged in successfully', time: 'Just now', type: 'success' },
-                    { id: 2, action: 'Profile updated', time: '2 hours ago', type: 'info' },
-                    { id: 3, action: 'New notification received', time: '1 day ago', type: 'info' },
-                  ].map((item, itemIdx) => (
-                    <li key={item.id}>
-                      <div className="relative pb-8">
-                        {itemIdx !== 2 ? (
-                          <span className="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true" />
-                        ) : null}
-                        <div className="relative flex space-x-3">
-                          <div>
-                            <span className={`h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white ${
-                              item.type === 'success' ? 'bg-green-500' : 'bg-blue-500'
-                            }`}>
-                              {item.type === 'success' ? (
-                                <svg className="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                </svg>
-                              ) : (
-                                <svg className="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                                </svg>
-                              )}
-                            </span>
-                          </div>
-                          <div className="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
-                            <div>
-                              <p className="text-sm text-gray-500">{item.action}</p>
-                            </div>
-                            <div className="text-right text-sm whitespace-nowrap text-gray-500">
-                              {item.time}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
+          <RecentActivity />
+
+          {/* React Query Demo */}
+          <AddMedicalRecordDemo />
         </div>
       </main>
-    </div>
-  )
+    </Layout>
+  );
 }
