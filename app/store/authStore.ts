@@ -43,7 +43,7 @@ const getJWTFromCookie = (): string | null => {
   return Cookies.get('jwt') || Cookies.get('token') || Cookies.get('authToken') || null
 }
 
-const useAuthStore = create<AuthStore>((set, get) => ({
+const useAuthStore = create<AuthStore>((set) => ({
   isAuthenticated: false,
   userInfo: null,
   setAuthenticated: (value: boolean) => {

@@ -3,7 +3,7 @@
 import { useDashboardStats } from '@/lib/queries'
 
 export function DashboardStats() {
-  const { data: stats, isLoading, isError, error } = useDashboardStats()
+  const { data: stats, isLoading, isError } = useDashboardStats()
 
   if (isLoading) {
     return (

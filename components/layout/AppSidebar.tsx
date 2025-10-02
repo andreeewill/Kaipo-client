@@ -7,11 +7,9 @@ import {
   Stethoscope,
   ChevronLeft,
   ChevronRight,
-  Menu,
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
 
 // Menu items for the main navigation
 const menuItems = [

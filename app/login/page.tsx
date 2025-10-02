@@ -81,7 +81,7 @@ function LoginPageContent() {
         // Login failed
         toast.error("Invalid email or password. Please try again.");
       }
-    } catch (error) {
+    } catch {
       toast.error("Network error. Please check your connection and try again.");
     } finally {
       setIsLoading(false);

@@ -6,14 +6,6 @@ import { useRouter } from "next/navigation";
 import useAuthStore from "@/app/store/authStore";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { format, isSameDay, parseISO } from "date-fns";
 import { PatientTable } from "@/components/PatientTable";
 import { StatusIndicator } from "@/components/StatusIndicator";
 import { PatientSummary } from "@/components/PatientSummary";
@@ -288,7 +280,28 @@ export default function Schedule() {
             detailedView ? "-translate-x-full" : "translate-x-0"
           } flex-1 p-6`}
         >
-          <h1 className="text-2xl font-bold mb-6 text-gray-900">{selected}</h1>
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-2xl font-bold text-gray-900">{selected}</h1>
+            <Button
+              onClick={() => router.push('/medical-record/add')}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              <svg
+                className="w-4 h-4 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
+              Add Medical Record
+            </Button>
+          </div>
 
           {/* Patients amount info Section */}
           <PatientSummary

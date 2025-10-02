@@ -9,7 +9,6 @@ import { RecentActivity } from "@/components/RecentActivity";
 import { AddMedicalRecordDemo } from "@/components/AddMedicalRecordDemo";
 import { PatientSummary } from "@/components/PatientSummary";
 import { Layout } from "@/components/layout/Layout";
-import { Calendar } from "@/components/ui/calendar";
 import { Status, Patient } from "@/types/patient";
 import { format } from "date-fns";
 import {
@@ -113,7 +112,6 @@ export default function DashboardPage() {
   console.log("🚀 ~ DashboardPage ~ isAuthenticated:", isAuthenticated)
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [selectedRole, setSelectedRole] = useState<string>("doctor");
   const [patientData] = useState<Patient[]>(generateDashboardPatientData());
   const currentDateString = format(new Date(), "yyyy-MM-dd");

@@ -1,23 +1,8 @@
 import axios from "axios";
-import Cookies from "js-cookie";
-import useAuthStore from "@/app/store/authStore";
 
 // Get API base URL from environment or use default
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL || "https://api.kaipo.my.id";
-
-// Helper function to get JWT from cookie
-const getJWTFromCookie = (): string | null => {
-  if (typeof window === "undefined") return null;
-
-  // Try common JWT cookie names
-  return (
-    Cookies.get("jwt") ||
-    Cookies.get("token") ||
-    Cookies.get("authToken") ||
-    null
-  );
-};
 
 // Create axios instance
 export const apiClient = axios.create({

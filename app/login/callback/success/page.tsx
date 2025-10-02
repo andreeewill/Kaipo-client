@@ -44,7 +44,7 @@ function GoogleCallbackContent() {
           // Exchange failed
           router.push("/login?error=google_failed");
         }
-      } catch (error) {
+      } catch {
         // Network error
         router.push("/login?error=google_failed");
       }

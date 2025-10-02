@@ -26,7 +26,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
         } else {
           setAuthenticated(false)
         }
-      } catch (error) {
+      } catch {
         // If there's an error (network, etc.), assume not authenticated
         setAuthenticated(false)
       }

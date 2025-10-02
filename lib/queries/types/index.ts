@@ -20,7 +20,7 @@ export interface ActivityItem {
   time: string
   type: 'success' | 'info' | 'warning' | 'error'
   userId?: string
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 }
 
 // Medical Record types
@@ -127,5 +127,5 @@ export interface PaginatedResponse<T> {
 export interface ApiError {
   message: string
   code?: string
-  details?: Record<string, any>
+  details?: Record<string, unknown>
 }

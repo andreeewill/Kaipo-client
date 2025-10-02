@@ -12,10 +12,13 @@ function makeQueryClient() {
         // With SSR, we usually want to set some default staleTime
         // above 0 to avoid refetching immediately on the client
         staleTime: 60 * 1000, // 1 minute
-        retry: (failureCount, error: any) => {
+        retry: (failureCount, error: unknown) => {
           // Don't retry on 4xx errors (client errors)
-          if (error?.response?.status >= 400 && error?.response?.status < 500) {
-            return false
+          if (error && typeof error === 'object' && 'response' in error) {
+            const axiosError = error as { response?: { status?: number } };
+            if (axiosError.response?.status && axiosError.response.status >= 400 && axiosError.response.status < 500) {
+              return false;
+            }
           }
           // Retry up to 3 times for other errors
           return failureCount < 3
