@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Image from "next/image"
 import useAuthStore from '@/app/store/authStore'
 import { Button } from "@/components/ui/button"
+import Navbar from "@/components/Navbar"
 
 export default function Page() {
   const { isAuthenticated } = useAuthStore()
@@ -22,7 +23,8 @@ export default function Page() {
   }
 
   return (
-    <div className="bg-white h-screen">
+    <div className="bg-white min-h-screen">
+      <Navbar />
       <div className="relative isolate px-6 pt-14 lg:px-8">
         <div className="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
           <Image
