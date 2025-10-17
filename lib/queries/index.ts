@@ -13,3 +13,6 @@ export * from './hooks/useMedicalRecords'
 
 // Appointments hooks
 export * from './hooks/useAppointments'
+
+// Diagnosis mutations
+export * from './mutations/useDiagnosisMutation'

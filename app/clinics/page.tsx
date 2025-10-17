@@ -17,17 +17,35 @@ const mockClinics: Clinic[] = [
     name: 'Klinik Sehat Sentosa',
     description: 'Klinik umum dengan layanan kesehatan keluarga terlengkap. Melayani pemeriksaan umum, vaksinasi, dan konsultasi kesehatan.',
     image: '/kaipo.png',
-    address: 'Jl. Sudirman No. 123, Jakarta Pusat',
+    address: 'Jakarta',
     priceRangeMin: 50000,
     priceRangeMax: 200000,
-    doctors: [
-      { id: 'd1', name: 'Dr. Ahmad Wijaya', specialization: 'Dokter Umum', availableDates: ['2024-10-15', '2024-10-16', '2024-10-17'] },
-      { id: 'd2', name: 'Dr. Sari Indah', specialization: 'Dokter Gigi', availableDates: ['2024-10-15', '2024-10-18', '2024-10-19'] }
+    branches: [
+      {
+        id: 'b1',
+        name: 'Cabang Sudirman',
+        address: 'Jl. Sudirman No. 123, Jakarta Pusat',
+        doctors: [
+          { id: 'd1', name: 'Dr. Ahmad Wijaya', specialization: 'Dokter Umum', availableDates: ['2024-10-15', '2024-10-16', '2024-10-17'], branchIds: ['b1'] },
+          { id: 'd2', name: 'Dr. Sari Indah', specialization: 'Dokter Gigi', availableDates: ['2024-10-15', '2024-10-18', '2024-10-19'], branchIds: ['b1'] }
+        ]
+      },
+      {
+        id: 'b2',
+        name: 'Cabang Menteng',
+        address: 'Jl. Menteng Raya No. 45, Jakarta Pusat',
+        doctors: [
+          { id: 'd7', name: 'Dr. Maya Putri', specialization: 'Dokter Umum', availableDates: ['2024-10-16', '2024-10-17', '2024-10-18'], branchIds: ['b2'] },
+          { id: 'd8', name: 'Dr. Rudi Hermawan', specialization: 'Dokter Anak', availableDates: ['2024-10-15', '2024-10-17', '2024-10-19'], branchIds: ['b2'] }
+        ]
+      }
     ],
     availableSlots: [
-      { doctorId: 'd1', date: '2024-10-15', times: ['09:00', '10:00', '11:00', '14:00', '15:00'] },
-      { doctorId: 'd1', date: '2024-10-16', times: ['09:00', '10:00', '14:00', '15:00'] },
-      { doctorId: 'd2', date: '2024-10-15', times: ['08:00', '09:00', '10:00'] }
+      { doctorId: 'd1', branchId: 'b1', date: '2024-10-15', times: ['09:00', '10:00', '11:00', '14:00', '15:00'] },
+      { doctorId: 'd1', branchId: 'b1', date: '2024-10-16', times: ['09:00', '10:00', '14:00', '15:00'] },
+      { doctorId: 'd2', branchId: 'b1', date: '2024-10-15', times: ['08:00', '09:00', '10:00'] },
+      { doctorId: 'd7', branchId: 'b2', date: '2024-10-16', times: ['09:00', '10:00', '11:00', '14:00'] },
+      { doctorId: 'd8', branchId: 'b2', date: '2024-10-15', times: ['08:00', '09:00', '13:00', '14:00'] }
     ]
   },
   {
@@ -35,16 +53,23 @@ const mockClinics: Clinic[] = [
     name: 'Klinik Pratama Harapan',
     description: 'Klinik modern dengan fasilitas terkini dan tenaga medis berpengalaman. Spesialisasi dalam kesehatan anak dan dewasa.',
     image: '/kaipo.png',
-    address: 'Jl. Gatot Subroto No. 456, Jakarta Selatan',
+    address: 'Jakarta Selatan',
     priceRangeMin: 75000,
     priceRangeMax: 300000,
-    doctors: [
-      { id: 'd3', name: 'Dr. Budi Santoso', specialization: 'Dokter Anak', availableDates: ['2024-10-15', '2024-10-17', '2024-10-19'] },
-      { id: 'd4', name: 'Dr. Lisa Kartika', specialization: 'Dokter Umum', availableDates: ['2024-10-16', '2024-10-18', '2024-10-20'] }
+    branches: [
+      {
+        id: 'b3',
+        name: 'Cabang Gatot Subroto',
+        address: 'Jl. Gatot Subroto No. 456, Jakarta Selatan',
+        doctors: [
+          { id: 'd3', name: 'Dr. Budi Santoso', specialization: 'Dokter Anak', availableDates: ['2024-10-15', '2024-10-17', '2024-10-19'], branchIds: ['b3'] },
+          { id: 'd4', name: 'Dr. Lisa Kartika', specialization: 'Dokter Umum', availableDates: ['2024-10-16', '2024-10-18', '2024-10-20'], branchIds: ['b3'] }
+        ]
+      }
     ],
     availableSlots: [
-      { doctorId: 'd3', date: '2024-10-15', times: ['08:00', '09:00', '10:00', '13:00', '14:00'] },
-      { doctorId: 'd4', date: '2024-10-16', times: ['09:00', '10:00', '11:00', '15:00', '16:00'] }
+      { doctorId: 'd3', branchId: 'b3', date: '2024-10-15', times: ['08:00', '09:00', '10:00', '13:00', '14:00'] },
+      { doctorId: 'd4', branchId: 'b3', date: '2024-10-16', times: ['09:00', '10:00', '11:00', '15:00', '16:00'] }
     ]
   },
   {
@@ -52,16 +77,32 @@ const mockClinics: Clinic[] = [
     name: 'Klinik Mitra Keluarga',
     description: 'Klinik keluarga dengan pelayanan 24 jam. Menyediakan layanan emergency, konsultasi online, dan pemeriksaan kesehatan rutin.',
     image: '/kaipo.png',
-    address: 'Jl. Thamrin No. 789, Jakarta Pusat',
+    address: 'Jakarta Pusat',
     priceRangeMin: 60000,
     priceRangeMax: 250000,
-    doctors: [
-      { id: 'd5', name: 'Dr. Rina Sari', specialization: 'Dokter Umum', availableDates: ['2024-10-15', '2024-10-16', '2024-10-18'] },
-      { id: 'd6', name: 'Dr. Hendra Wijaya', specialization: 'Dokter Penyakit Dalam', availableDates: ['2024-10-17', '2024-10-19', '2024-10-20'] }
+    branches: [
+      {
+        id: 'b4',
+        name: 'Cabang Thamrin',
+        address: 'Jl. Thamrin No. 789, Jakarta Pusat',
+        doctors: [
+          { id: 'd5', name: 'Dr. Rina Sari', specialization: 'Dokter Umum', availableDates: ['2024-10-15', '2024-10-16', '2024-10-18'], branchIds: ['b4'] },
+          { id: 'd6', name: 'Dr. Hendra Wijaya', specialization: 'Dokter Penyakit Dalam', availableDates: ['2024-10-17', '2024-10-19', '2024-10-20'], branchIds: ['b4'] }
+        ]
+      },
+      {
+        id: 'b5',
+        name: 'Cabang Sarinah',
+        address: 'Jl. MH Thamrin No. 11, Jakarta Pusat',
+        doctors: [
+          { id: 'd9', name: 'Dr. Indira Sari', specialization: 'Dokter Kandungan', availableDates: ['2024-10-15', '2024-10-17', '2024-10-19'], branchIds: ['b5'] }
+        ]
+      }
     ],
     availableSlots: [
-      { doctorId: 'd5', date: '2024-10-15', times: ['07:00', '08:00', '09:00', '13:00', '14:00', '15:00'] },
-      { doctorId: 'd6', date: '2024-10-17', times: ['09:00', '10:00', '11:00', '14:00'] }
+      { doctorId: 'd5', branchId: 'b4', date: '2024-10-15', times: ['07:00', '08:00', '09:00', '13:00', '14:00', '15:00'] },
+      { doctorId: 'd6', branchId: 'b4', date: '2024-10-17', times: ['09:00', '10:00', '11:00', '14:00'] },
+      { doctorId: 'd9', branchId: 'b5', date: '2024-10-15', times: ['08:00', '09:00', '10:00', '13:00'] }
     ]
   }
 ]
@@ -74,13 +115,14 @@ export default function ClinicsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [formData, setFormData] = useState<Partial<ClinicRegistrationRequest>>({
     name: '',
-    mobileNumber: '',
     whatsappNumber: '',
+    branchId: '',
     doctorId: '',
     appointmentDate: '',
     appointmentTime: '',
     keluhan: '',
   })
+  const [selectedBranch, setSelectedBranch] = useState<string>('')
   const [selectedDoctor, setSelectedDoctor] = useState<string>('')
   const [selectedDate, setSelectedDate] = useState<string>('')
 
@@ -104,6 +146,13 @@ export default function ClinicsPage() {
     setIsModalOpen(true)
   }
 
+  const handleBranchChange = (branchId: string) => {
+    setSelectedBranch(branchId)
+    setFormData({ ...formData, branchId, doctorId: '', appointmentDate: '', appointmentTime: '' })
+    setSelectedDoctor('')
+    setSelectedDate('')
+  }
+
   const handleDoctorChange = (doctorId: string) => {
     setSelectedDoctor(doctorId)
     setFormData({ ...formData, doctorId })
@@ -116,10 +165,16 @@ export default function ClinicsPage() {
     setFormData({ ...formData, appointmentDate: date, appointmentTime: '' })
   }
 
+  const getAvailableDoctors = () => {
+    if (!selectedClinic || !selectedBranch) return []
+    const branch = selectedClinic.branches.find(branch => branch.id === selectedBranch)
+    return branch?.doctors || []
+  }
+
   const getAvailableTimes = () => {
-    if (!selectedClinic || !selectedDoctor || !selectedDate) return []
+    if (!selectedClinic || !selectedBranch || !selectedDoctor || !selectedDate) return []
     const slot = selectedClinic.availableSlots.find(
-      slot => slot.doctorId === selectedDoctor && slot.date === selectedDate
+      slot => slot.doctorId === selectedDoctor && slot.branchId === selectedBranch && slot.date === selectedDate
     )
     return slot?.times || []
   }
@@ -134,13 +189,14 @@ export default function ClinicsPage() {
     setIsModalOpen(false)
     setFormData({
       name: '',
-      mobileNumber: '',
       whatsappNumber: '',
+      branchId: '',
       doctorId: '',
       appointmentDate: '',
       appointmentTime: '',
       keluhan: '',
     })
+    setSelectedBranch('')
     setSelectedDoctor('')
     setSelectedDate('')
   }
@@ -196,13 +252,14 @@ export default function ClinicsPage() {
                     setIsModalOpen(open)
                     if (!open) {
                       setSelectedClinic(null)
+                      setSelectedBranch('')
                       setSelectedDoctor('')
                       setSelectedDate('')
                     }
                   }}>
                     <DialogTrigger asChild>
                       <Button 
-                        className="w-full"
+                        className="w-full cursor-pointer"
                         onClick={() => handleRegister(clinic)}
                       >
                         Daftar Sekarang
@@ -212,106 +269,128 @@ export default function ClinicsPage() {
                       <DialogHeader>
                         <DialogTitle>Daftar di {clinic.name}</DialogTitle>
                       </DialogHeader>
-                      <form onSubmit={handleSubmit} className="space-y-4">
-                        <div>
-                          <label className="block text-sm font-medium mb-1">Nama Lengkap</label>
-                          <Input
-                            required
-                            value={formData.name}
-                            onChange={(e) => setFormData({...formData, name: e.target.value})}
-                            placeholder="Masukkan nama lengkap"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="block text-sm font-medium mb-1">Nomor HP</label>
-                          <Input
-                            required
-                            type="tel"
-                            value={formData.mobileNumber}
-                            onChange={(e) => setFormData({...formData, mobileNumber: e.target.value})}
-                            placeholder="08xxxxxxxxxx"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="block text-sm font-medium mb-1">WhatsApp (Opsional)</label>
-                          <Input
-                            type="tel"
-                            value={formData.whatsappNumber}
-                            onChange={(e) => setFormData({...formData, whatsappNumber: e.target.value})}
-                            placeholder="08xxxxxxxxxx"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="block text-sm font-medium mb-1">Pilih Dokter</label>
-                          <Select onValueChange={handleDoctorChange} value={selectedDoctor}>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Pilih dokter" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {clinic.doctors.map((doctor) => (
-                                <SelectItem key={doctor.id} value={doctor.id}>
-                                  {doctor.name} - {doctor.specialization}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-
-                        {selectedDoctor && (
+                      <form onSubmit={handleSubmit} className="space-y-6">
+                        {/* Personal Information Section */}
+                        <div className="space-y-4 border-b pb-4">
+                          <h3 className="text-lg font-medium text-gray-900">Informasi Pribadi</h3>
                           <div>
-                            <label className="block text-sm font-medium mb-1">Tanggal Kunjungan</label>
-                            <Select onValueChange={handleDateChange} value={selectedDate}>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Pilih tanggal" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {clinic.doctors
-                                  .find(d => d.id === selectedDoctor)
-                                  ?.availableDates.map((date) => (
-                                    <SelectItem key={date} value={date}>
-                                      {new Date(date).toLocaleDateString('id-ID', {
-                                        weekday: 'long',
-                                        year: 'numeric',
-                                        month: 'long',
-                                        day: 'numeric'
-                                      })}
-                                    </SelectItem>
-                                  ))}
-                              </SelectContent>
-                            </Select>
+                            <label className="block text-sm font-medium mb-1">Nama Lengkap</label>
+                            <Input
+                              required
+                              value={formData.name}
+                              onChange={(e) => setFormData({...formData, name: e.target.value})}
+                              placeholder="Masukkan nama lengkap"
+                            />
                           </div>
-                        )}
 
-                        {selectedDate && (
                           <div>
-                            <label className="block text-sm font-medium mb-1">Waktu Kunjungan</label>
-                            <Select onValueChange={(time) => setFormData({...formData, appointmentTime: time})}>
+                            <label className="block text-sm font-medium mb-1">
+                              WhatsApp <span className="text-red-500">*</span>
+                            </label>
+                            <Input
+                              required
+                              type="tel"
+                              value={formData.whatsappNumber}
+                              onChange={(e) => setFormData({...formData, whatsappNumber: e.target.value})}
+                              placeholder="08xxxxxxxxxx"
+                            />
+                            <p className="text-xs text-gray-500 mt-1">
+                              Pastikan nomor terhubung dengan WhatsApp untuk komunikasi
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Appointment Information Section */}
+                        <div className="space-y-4">
+                          <h3 className="text-lg font-medium text-gray-900">Informasi Kunjungan</h3>
+                          
+                          <div>
+                            <label className="block text-sm font-medium mb-1">Pilih Cabang</label>
+                            <Select onValueChange={handleBranchChange} value={selectedBranch}>
                               <SelectTrigger>
-                                <SelectValue placeholder="Pilih waktu" />
+                                <SelectValue placeholder="Pilih cabang" />
                               </SelectTrigger>
                               <SelectContent>
-                                {getAvailableTimes().map((time) => (
-                                  <SelectItem key={time} value={time}>
-                                    {time}
+                                {clinic.branches.map((branch) => (
+                                  <SelectItem key={branch.id} value={branch.id}>
+                                    {branch.name} - {branch.address}
                                   </SelectItem>
                                 ))}
                               </SelectContent>
                             </Select>
                           </div>
-                        )}
 
-                        <div>
-                          <label className="block text-sm font-medium mb-1">Keluhan</label>
-                          <Textarea
-                            required
-                            value={formData.keluhan}
-                            onChange={(e) => setFormData({...formData, keluhan: e.target.value})}
-                            placeholder="Jelaskan keluhan atau gejala yang Anda alami"
-                            rows={3}
-                          />
+                          {selectedBranch && (
+                            <div>
+                              <label className="block text-sm font-medium mb-1">Pilih Dokter</label>
+                              <Select onValueChange={handleDoctorChange} value={selectedDoctor}>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Pilih dokter" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {getAvailableDoctors().map((doctor) => (
+                                    <SelectItem key={doctor.id} value={doctor.id}>
+                                      {doctor.name} - {doctor.specialization}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          )}
+
+                          {selectedDoctor && (
+                            <div>
+                              <label className="block text-sm font-medium mb-1">Tanggal Kunjungan</label>
+                              <Select onValueChange={handleDateChange} value={selectedDate}>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Pilih tanggal" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {getAvailableDoctors()
+                                    .find(d => d.id === selectedDoctor)
+                                    ?.availableDates.map((date) => (
+                                      <SelectItem key={date} value={date}>
+                                        {new Date(date).toLocaleDateString('id-ID', {
+                                          weekday: 'long',
+                                          year: 'numeric',
+                                          month: 'long',
+                                          day: 'numeric'
+                                        })}
+                                      </SelectItem>
+                                    ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          )}
+
+                          {selectedDate && (
+                            <div>
+                              <label className="block text-sm font-medium mb-1">Waktu Kunjungan</label>
+                              <Select onValueChange={(time) => setFormData({...formData, appointmentTime: time})}>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Pilih waktu" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {getAvailableTimes().map((time) => (
+                                    <SelectItem key={time} value={time}>
+                                      {time}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          )}
+
+                          <div>
+                            <label className="block text-sm font-medium mb-1">Keluhan</label>
+                            <Textarea
+                              required
+                              value={formData.keluhan}
+                              onChange={(e) => setFormData({...formData, keluhan: e.target.value})}
+                              placeholder="Jelaskan keluhan atau gejala yang Anda alami"
+                              rows={3}
+                            />
+                          </div>
                         </div>
 
                         <div className="flex gap-3 pt-4">
@@ -319,11 +398,11 @@ export default function ClinicsPage() {
                             type="button" 
                             variant="outline" 
                             onClick={() => setIsModalOpen(false)}
-                            className="flex-1"
+                            className="flex-1 cursor-pointer"
                           >
                             Batal
                           </Button>
-                          <Button type="submit" className="flex-1">
+                          <Button type="submit" className="flex-1 cursor-pointer">
                             Daftar
                           </Button>
                         </div>
@@ -342,6 +421,7 @@ export default function ClinicsPage() {
                 variant="outline"
                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
+                className="cursor-pointer"
               >
                 Previous
               </Button>
@@ -351,7 +431,7 @@ export default function ClinicsPage() {
                   key={page}
                   variant={currentPage === page ? "default" : "outline"}
                   onClick={() => setCurrentPage(page)}
-                  className="w-10"
+                  className="w-10 cursor-pointer"
                 >
                   {page}
                 </Button>
@@ -361,6 +441,7 @@ export default function ClinicsPage() {
                 variant="outline"
                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                 disabled={currentPage === totalPages}
+                className="cursor-pointer"
               >
                 Next
               </Button>

@@ -91,6 +91,13 @@ export interface PatientFormErrors {
 }
 
 // Clinic types
+export interface Branch {
+  id: string;
+  name: string;
+  address: string;
+  doctors: Doctor[];
+}
+
 export interface Clinic {
   id: string;
   name: string;
@@ -99,7 +106,7 @@ export interface Clinic {
   address: string;
   priceRangeMin: number;
   priceRangeMax: number;
-  doctors: Doctor[];
+  branches: Branch[];
   availableSlots: TimeSlot[];
 }
 
@@ -108,18 +115,20 @@ export interface Doctor {
   name: string;
   specialization: string;
   availableDates: string[];
+  branchIds: string[];
 }
 
 export interface TimeSlot {
   doctorId: string;
+  branchId: string;
   date: string;
   times: string[];
 }
 
 export interface ClinicRegistrationRequest {
   name: string;
-  mobileNumber: string;
-  whatsappNumber?: string;
+  whatsappNumber: string;
+  branchId: string;
   doctorId: string;
   appointmentDate: string;
   appointmentTime: string;
@@ -132,4 +141,25 @@ export interface ClinicListResponse {
   totalPages: number;
   currentPage: number;
   totalItems: number;
+}
+
+// AI Diagnosis types
+export interface DiagnosisRequest {
+  anamnesis: string;
+  examination: string;
+}
+
+export interface DiagnosisRecommendation {
+  diagnosis: string;
+  icd10: string;
+  reasoning: string;
+}
+
+export interface DiagnosisResponse {
+  httpStatus: number;
+  operationId: string;
+  data: {
+    recommendations: DiagnosisRecommendation[];
+    summary: string;
+  };
 }
