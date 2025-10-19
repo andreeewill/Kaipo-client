@@ -94,9 +94,57 @@ export interface UpdateAppointmentData {
   notes?: string
 }
 
+// Patient types
+export interface Patient {
+  NIK: string
+  kkNumber?: string | null
+  name: string
+  dob: string
+  birthPlace: string
+  gender: 'male' | 'female'
+  maritalStatus: string
+  addressLine: string
+  addressUse: string
+  provinceName: string
+  cityName: string
+  disctrictName: string
+  subDistrictName: string
+  rt: string
+  rw: string
+  postalCode: string
+  phone: string
+  email: string
+  occupation: string
+}
+
+export interface CreatePatientData {
+  NIK: string
+  name: string
+  dob: string
+  birthPlace: string
+  gender: 'male' | 'female'
+  addressLine: string
+  provinceCode: string
+  provinceName: string
+  cityCode: string
+  cityName: string
+  districtName: string
+  districtCode: string
+  subDistrictCode: string
+  subDistrictName: string
+  rt: string
+  rw: string
+  postalCode: string
+  phone: string
+  email: string
+  citizenshipStatus: string
+  notexist?: string
+}
+
 // API Response wrapper
 export interface ApiResponse<T> {
-  success: boolean
+  httpStatus: number
+  operationId: string
   data: T
   message?: string
   error?: string
@@ -121,6 +169,42 @@ export interface PaginatedResponse<T> {
     hasNext: boolean
     hasPrev: boolean
   }
+}
+
+// Reservation types
+export interface Branch {
+  id: string
+  name: string
+}
+
+export interface Doctor {
+  id: string
+  name: string
+}
+
+export interface Timeslot {
+  id: string
+  dayOfWeek: string
+  startTime: string
+  endTime: string
+}
+
+export interface Reservation {
+  name: string
+  complaint: string
+  doctorName: string
+  phone: string
+  startTime: string
+  endTime: string
+  status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED'
+}
+
+export interface CreateReservationData {
+  name: string
+  phone: string
+  complaint: string
+  timeslotId: string
+  date: string
 }
 
 // Error types

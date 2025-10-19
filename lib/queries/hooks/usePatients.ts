@@ -10,29 +10,55 @@ import {
   SubDistrict 
 } from '../../../types/api';
 
+// Query keys for patients
+export const patientKeys = {
+  all: ['patients'] as const,
+  lists: () => [...patientKeys.all, 'list'] as const,
+  list: () => [...patientKeys.lists()] as const,
+  details: () => [...patientKeys.all, 'detail'] as const,
+  detail: (id: string) => [...patientKeys.details(), id] as const,
+}
+
 // Patient API hooks
 export const useCreatePatient = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (patientData: CreatePatientRequest): Promise<ApiResponse<PatientResponse>> => {
-      const response = await apiClient.post('/patients', patientData);
-      return response.data;
+    mutationFn: async (patientData: CreatePatientRequest): Promise<void> => {
+      await apiClient.post('/patients', patientData);
+      // POST returns 204 status code (no content)
     },
     onSuccess: () => {
       // Invalidate and refetch patients list
-      queryClient.invalidateQueries({ queryKey: ['patients'] });
+      queryClient.invalidateQueries({ queryKey: patientKeys.lists() });
+    },
+    onError: (error) => {
+      console.error('Failed to create patient:', error);
     },
   });
 };
 
 export const usePatients = () => {
   return useQuery({
-    queryKey: ['patients'],
-    queryFn: async (): Promise<ApiResponse<PatientResponse[]>> => {
-      const response = await apiClient.get('/patients');
-      return response.data;
+    queryKey: patientKeys.list(),
+    queryFn: async (): Promise<PatientResponse[]> => {
+      const response = await apiClient.get<ApiResponse<PatientResponse[]>>('/patients');
+      return response.data.data;
     },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+
+// Get single patient by ID (if endpoint exists in the future)
+export const usePatient = (id: string) => {
+  return useQuery({
+    queryKey: patientKeys.detail(id),
+    queryFn: async (): Promise<PatientResponse> => {
+      const response = await apiClient.get<ApiResponse<PatientResponse>>(`/patients/${id}`);
+      return response.data.data;
+    },
+    enabled: !!id,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };
 

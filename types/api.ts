@@ -33,20 +33,24 @@ export interface CreatePatientRequest {
 
 export interface PatientResponse {
   NIK: string;
+  kkNumber?: string | null;
   name: string;
   dob: string;
   birthPlace: string;
   gender: string;
+  maritalStatus: string;
   addressLine: string;
+  addressUse: string;
   provinceName: string;
   cityName: string;
-  districtName: string;
+  disctrictName: string;
   subDistrictName: string;
   rt: string;
   rw: string;
   postalCode: string;
   phone: string;
   email: string;
+  occupation: string;
 }
 
 // Reference data types

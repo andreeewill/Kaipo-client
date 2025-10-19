@@ -19,7 +19,7 @@ export const PatientList: React.FC = () => {
 
   // Filter patients based on search term
   const filteredPatients =
-    patientsData?.data.filter(
+    patientsData?.filter(
       (patient) =>
         patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         patient.NIK.includes(searchTerm) ||
@@ -35,7 +35,7 @@ export const PatientList: React.FC = () => {
       });
     } catch (err) {
       setToast({
-        message: "Failed to refresh patient list " + err.message,
+        message: `Failed to refresh patient list: ${err instanceof Error ? err.message : 'Unknown error'}`,
         type: "error",
       });
     }
@@ -297,7 +297,7 @@ export const PatientList: React.FC = () => {
                           {patient.cityName}
                         </div>
                         <div className="text-xs text-gray-400">
-                          {patient.districtName}
+                          {patient.disctrictName}
                         </div>
                       </div>
                     </td>
@@ -337,7 +337,7 @@ export const PatientList: React.FC = () => {
                 <span className="font-medium">{filteredPatients.length}</span>{" "}
                 of{" "}
                 <span className="font-medium">
-                  {patientsData?.data.length || 0}
+                  {patientsData?.length || 0}
                 </span>{" "}
                 patients
               </div>

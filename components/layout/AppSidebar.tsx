@@ -6,6 +6,7 @@ import {
   Calendar,
   Stethoscope,
   Brain,
+  Smile,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
@@ -28,6 +29,11 @@ const menuItems = [
     title: "Medical Record",
     url: "/medical-record", 
     icon: Stethoscope,
+  },
+  {
+    title: "Odontogram",
+    url: "/odontogram",
+    icon: Smile,
   },
   {
     title: "AI Diagnosis",
