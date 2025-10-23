@@ -111,15 +111,12 @@ export default function AppointmentManagementPage() {
     selectedBranch
   );
 
-  // Reset selections when branch, doctor or date changes
-  useEffect(() => {
-    setSelectedTimeslot(null);
-  }, [selectedBranch, selectedDoctor, selectedDate]);
-
   // Reset doctor when branch changes
   useEffect(() => {
-    setSelectedDoctor("");
-    setSelectedTimeslot(null);
+    if (selectedBranch) {
+      setSelectedDoctor("");
+      setSelectedTimeslot(null);
+    }
   }, [selectedBranch]);
 
   const handleSchedulePatient = (reservation) => {

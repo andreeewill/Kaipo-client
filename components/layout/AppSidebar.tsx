@@ -89,6 +89,7 @@ export function AppSidebar() {
   };
 
   const handleNavigation = (url: string) => {
+    console.log("Navigating to:", url); // Debug log
     router.push(url);
   };
 
@@ -106,14 +107,21 @@ export function AppSidebar() {
 
   // Auto-expand menus that contain active items
   useEffect(() => {
-    const newExpandedMenus = new Set(expandedMenus);
+    const newExpandedMenus = new Set();
     menuItems.forEach(item => {
       if (item.submenu && isMenuActive(item)) {
         newExpandedMenus.add(item.title);
       }
     });
-    setExpandedMenus(newExpandedMenus);
-  }, [pathname, expandedMenus, isMenuActive]);
+    
+    // Only update if there's actually a change
+    const currentExpandedArray = Array.from(expandedMenus).sort();
+    const newExpandedArray = Array.from(newExpandedMenus).sort();
+    
+    if (JSON.stringify(currentExpandedArray) !== JSON.stringify(newExpandedArray)) {
+      setExpandedMenus(newExpandedMenus);
+    }
+  }, [pathname]); // Only depend on pathname
 
   return (
     <>
@@ -138,7 +146,12 @@ export function AppSidebar() {
                 {item.submenu ? (
                   // Menu with submenu - just show main icon on mobile
                   <button
-                    onClick={() => item.submenu?.length === 1 ? handleNavigation(item.submenu[0].url) : undefined}
+                    onClick={() => {
+                      // For mobile, navigate to first submenu item if available
+                      if (item.submenu && item.submenu.length > 0) {
+                        handleNavigation(item.submenu[0].url);
+                      }
+                    }}
                     className={`w-12 h-12 flex items-center justify-center rounded-lg transition-colors cursor-pointer hover:bg-gray-100 ${
                       isMenuActive(item)
                         ? "bg-[#ecf39e] text-[#132a13]"
@@ -238,7 +251,11 @@ export function AppSidebar() {
                         {item.submenu.map((subItem) => (
                           <li key={subItem.title}>
                             <button
-                              onClick={() => handleNavigation(subItem.url)}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleNavigation(subItem.url);
+                              }}
                               className={`w-full flex items-center px-3 py-2 rounded-lg transition-all duration-200 cursor-pointer hover:bg-gray-100 text-sm ${
                                 isActive(subItem.url)
                                   ? "bg-[#31572c] text-[#ecf39e] shadow-sm"
