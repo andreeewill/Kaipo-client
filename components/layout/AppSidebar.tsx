@@ -9,6 +9,9 @@ import {
   Smile,
   ChevronLeft,
   ChevronRight,
+  CalendarCheck,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
@@ -21,9 +24,20 @@ const menuItems = [
     icon: CircuitBoard,
   },
   {
-    title: "Appointment", 
-    url: "/appointment",
+    title: "Pendaftaran",
     icon: Calendar,
+    submenu: [
+      {
+        title: "Pendaftaran Online",
+        url: "/appointment",
+        icon: Calendar,
+      },
+      {
+        title: "Atur Antrian",
+        url: "/dashboard/appointment-management",
+        icon: CalendarCheck,
+      },
+    ],
   },
   {
     title: "Medical Record",
@@ -46,11 +60,32 @@ export function AppSidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const [isExpanded, setIsExpanded] = useState(true);
+  const [expandedMenus, setExpandedMenus] = useState(new Set());
 
   const isActive = (url: string) => {
     const normalizedPathname = pathname.replace(/\/$/, "");
     const normalizedUrl = url.replace(/\/$/, "");
     return normalizedPathname === normalizedUrl;
+  };
+
+  const isMenuActive = (item) => {
+    if (item.url) {
+      return isActive(item.url);
+    }
+    if (item.submenu) {
+      return item.submenu.some(subItem => isActive(subItem.url));
+    }
+    return false;
+  };
+
+  const toggleMenu = (menuTitle) => {
+    const newExpandedMenus = new Set(expandedMenus);
+    if (newExpandedMenus.has(menuTitle)) {
+      newExpandedMenus.delete(menuTitle);
+    } else {
+      newExpandedMenus.add(menuTitle);
+    }
+    setExpandedMenus(newExpandedMenus);
   };
 
   const handleNavigation = (url: string) => {
@@ -68,6 +103,17 @@ export function AppSidebar() {
     const width = window.innerWidth >= 768 ? (isExpanded ? '256px' : '64px') : '64px';
     root.style.setProperty('--sidebar-width', width);
   }, [isExpanded]);
+
+  // Auto-expand menus that contain active items
+  useEffect(() => {
+    const newExpandedMenus = new Set(expandedMenus);
+    menuItems.forEach(item => {
+      if (item.submenu && isMenuActive(item)) {
+        newExpandedMenus.add(item.title);
+      }
+    });
+    setExpandedMenus(newExpandedMenus);
+  }, [pathname, expandedMenus, isMenuActive]);
 
   return (
     <>
@@ -89,17 +135,33 @@ export function AppSidebar() {
           <ul className="space-y-2 px-2">
             {menuItems.map((item) => (
               <li key={item.title}>
-                <button
-                  onClick={() => handleNavigation(item.url)}
-                  className={`w-12 h-12 flex items-center justify-center rounded-lg transition-colors cursor-pointer hover:bg-gray-100 ${
-                    isActive(item.url)
-                      ? "bg-blue-100 text-blue-600"
-                      : "text-gray-600 hover:text-gray-900"
-                  }`}
-                  title={item.title}
-                >
-                  <item.icon size={20} />
-                </button>
+                {item.submenu ? (
+                  // Menu with submenu - just show main icon on mobile
+                  <button
+                    onClick={() => item.submenu?.length === 1 ? handleNavigation(item.submenu[0].url) : undefined}
+                    className={`w-12 h-12 flex items-center justify-center rounded-lg transition-colors cursor-pointer hover:bg-gray-100 ${
+                      isMenuActive(item)
+                        ? "bg-[#ecf39e] text-[#132a13]"
+                        : "text-gray-600 hover:text-gray-900"
+                    }`}
+                    title={item.title}
+                  >
+                    <item.icon size={20} />
+                  </button>
+                ) : (
+                  // Regular menu item
+                  <button
+                    onClick={() => handleNavigation(item.url)}
+                    className={`w-12 h-12 flex items-center justify-center rounded-lg transition-colors cursor-pointer hover:bg-gray-100 ${
+                      isActive(item.url)
+                        ? "bg-[#ecf39e] text-[#132a13]"
+                        : "text-gray-600 hover:text-gray-900"
+                    }`}
+                    title={item.title}
+                  >
+                    <item.icon size={20} />
+                  </button>
+                )}
               </li>
             ))}
           </ul>
@@ -139,22 +201,79 @@ export function AppSidebar() {
           <ul className="space-y-2 px-3">
             {menuItems.map((item) => (
               <li key={item.title}>
-                <button
-                  onClick={() => handleNavigation(item.url)}
-                  className={`w-full flex items-center px-3 py-3 rounded-lg transition-all duration-200 cursor-pointer hover:bg-gray-100 ${
-                    isActive(item.url)
-                      ? "bg-blue-100 text-blue-600 shadow-sm"
-                      : "text-gray-700 hover:text-gray-900"
-                  }`}
-                  title={isExpanded ? undefined : item.title}
-                >
-                  <item.icon size={20} className="flex-shrink-0" />
-                  {isExpanded && (
-                    <span className="ml-3 font-medium transition-opacity duration-300">
-                      {item.title}
-                    </span>
-                  )}
-                </button>
+                {item.submenu ? (
+                  // Menu with submenu
+                  <div>
+                    <button
+                      onClick={() => toggleMenu(item.title)}
+                      className={`w-full flex items-center justify-between px-3 py-3 rounded-lg transition-all duration-200 cursor-pointer hover:bg-gray-100 ${
+                        isMenuActive(item)
+                          ? "bg-[#ecf39e] text-[#132a13] shadow-sm"
+                          : "text-gray-700 hover:text-gray-900"
+                      }`}
+                      title={isExpanded ? undefined : item.title}
+                    >
+                      <div className="flex items-center">
+                        <item.icon size={20} className="flex-shrink-0" />
+                        {isExpanded && (
+                          <span className="ml-3 font-medium transition-opacity duration-300">
+                            {item.title}
+                          </span>
+                        )}
+                      </div>
+                      {isExpanded && (
+                        <div className="flex-shrink-0">
+                          {expandedMenus.has(item.title) ? (
+                            <ChevronUp size={16} />
+                          ) : (
+                            <ChevronDown size={16} />
+                          )}
+                        </div>
+                      )}
+                    </button>
+                    
+                    {/* Submenu */}
+                    {isExpanded && expandedMenus.has(item.title) && (
+                      <ul className="mt-2 ml-6 space-y-1">
+                        {item.submenu.map((subItem) => (
+                          <li key={subItem.title}>
+                            <button
+                              onClick={() => handleNavigation(subItem.url)}
+                              className={`w-full flex items-center px-3 py-2 rounded-lg transition-all duration-200 cursor-pointer hover:bg-gray-100 text-sm ${
+                                isActive(subItem.url)
+                                  ? "bg-[#31572c] text-[#ecf39e] shadow-sm"
+                                  : "text-gray-600 hover:text-gray-900"
+                              }`}
+                            >
+                              <subItem.icon size={16} className="flex-shrink-0" />
+                              <span className="ml-2 transition-opacity duration-300">
+                                {subItem.title}
+                              </span>
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                ) : (
+                  // Regular menu item
+                  <button
+                    onClick={() => handleNavigation(item.url)}
+                    className={`w-full flex items-center px-3 py-3 rounded-lg transition-all duration-200 cursor-pointer hover:bg-gray-100 ${
+                      isActive(item.url)
+                        ? "bg-[#ecf39e] text-[#132a13] shadow-sm"
+                        : "text-gray-700 hover:text-gray-900"
+                    }`}
+                    title={isExpanded ? undefined : item.title}
+                  >
+                    <item.icon size={20} className="flex-shrink-0" />
+                    {isExpanded && (
+                      <span className="ml-3 font-medium transition-opacity duration-300">
+                        {item.title}
+                      </span>
+                    )}
+                  </button>
+                )}
               </li>
             ))}
           </ul>

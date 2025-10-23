@@ -2,7 +2,6 @@
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import Image from "next/image"
 import useAuthStore from '@/app/store/authStore'
 import { Button } from "@/components/ui/button"
 import Navbar from "@/components/Navbar"
@@ -27,13 +26,13 @@ export default function Page() {
       <Navbar />
       <div className="relative isolate px-6 pt-14 lg:px-8">
         <div className="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
-          <Image
+          {/* <Image
             className="absolute -top-1.5 right-2.5"
             src="/kaipo.png"
             alt="kaipo-logo"
             width={200}
             height={150}
-          />
+          /> */}
           <div className="text-center">
             <h1 className="text-5xl font-semibold tracking-tight text-balance text-gray-900 sm:text-7xl">
               Welcome to Kaipo

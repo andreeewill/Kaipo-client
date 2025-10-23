@@ -10,14 +10,14 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
+  --primary: oklch(0.177 0.055 128.47); /* #132a13 */
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.931 0.112 108.28); /* #ecf39e */
+  --secondary-foreground: oklch(0.177 0.055 128.47);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  --accent: oklch(0.348 0.075 126.95); /* #31572c */
+  --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
@@ -31,10 +31,10 @@
   --radius: 0.625rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: 240 5.3% 26.1%;
-  --sidebar-primary: 240 5.9% 10%;
+  --sidebar-primary: oklch(0.177 0.055 128.47); /* #132a13 */
   --sidebar-primary-foreground: 0 0% 98%;
-  --sidebar-accent: 240 4.8% 95.9%;
-  --sidebar-accent-foreground: 240 5.9% 10%;
+  --sidebar-accent: oklch(0.931 0.112 108.28); /* #ecf39e */
+  --sidebar-accent-foreground: oklch(0.177 0.055 128.47);
   --sidebar-border: 220 13% 91%;
   --sidebar-ring: 217.2 91.2% 59.8%;
 }
@@ -46,13 +46,13 @@
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.145 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.985 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.348 0.075 126.95); /* #31572c - lighter in dark mode */
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.553 0.094 116.14); /* #90a955 - darker in dark mode */
+  --secondary-foreground: oklch(0.145 0 0);
   --muted: oklch(0.269 0 0);
   --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
+  --accent: oklch(0.439 0.084 125.33); /* #4f772d */
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.396 0.141 25.723);
   --destructive-foreground: oklch(0.637 0.237 25.331);
@@ -64,15 +64,15 @@
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar-background: 240 5.9% 10%;
-  --sidebar-foreground: 240 4.8% 95.9%;
-  --sidebar-primary: 224.3 76.3% 48%;
-  --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 240 3.7% 15.9%;
-  --sidebar-accent-foreground: 240 4.8% 95.9%;
-  --sidebar-border: 240 3.7% 15.9%;
+  --sidebar-background: oklch(0.177 0.055 128.47); /* #132a13 */
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.348 0.075 126.95); /* #31572c */
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.553 0.094 116.14); /* #90a955 */
+  --sidebar-accent-foreground: oklch(0.145 0 0);
+  --sidebar-border: oklch(0.348 0.075 126.95);
   --sidebar-ring: 217.2 91.2% 59.8%;
-  --sidebar: hsl(240 5.9% 10%);
+  --sidebar: oklch(0.177 0.055 128.47);
 }
 
 @theme inline {
@@ -124,15 +124,15 @@
 }
 
 .sidebar-menu-item.active a {
-  background-color: #444444; /* Highlight color */
-  color: #ffffff; /* Active text color */
+  background-color: #31572c; /* accent color - dark green */
+  color: #ecf39e; /* secondary color - light green */
   font-weight: bold;
   border-radius: 4px;
 }
 
 .sidebar-menu-sub-item.active a {
-  background-color: #444444;
-  color: #ffffff;
+  background-color: #31572c; /* accent color - dark green */
+  color: #ecf39e; /* secondary color - light green */
   font-weight: bold;
   border-radius: 4px;
 }
@@ -148,8 +148,18 @@
 }
 
 .sidebar-menu-item.active a {
-  background-color: #e0f7fa;
-  color: #00796b;
+  background-color: #ecf39e; /* secondary color */
+  color: #132a13; /* primary color */
   font-weight: bold;
   border-radius: 4px;
+}
+
+/* Add cursor pointer to all buttons and interactive elements */
+button, [role="button"], [data-slot="trigger"], [data-slot="popover-trigger"], [data-slot="dropdown-trigger"] {
+  cursor: pointer !important;
+}
+
+/* Disabled buttons should not have cursor pointer */
+button:disabled, [role="button"]:disabled {
+  cursor: not-allowed !important;
 }

@@ -194,7 +194,7 @@ export default function CalendarPage() {
         {/* Event Details Modal */}
         {selectedEvent && ( // Only render the Dialog if an event is selected
           <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-md">
               <DialogHeader>
                 <DialogTitle>{selectedEvent.title}</DialogTitle>
                 <DialogDescription>
