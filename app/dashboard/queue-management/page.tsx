@@ -279,9 +279,14 @@ export default function AppointmentManagementPage() {
             <UserPlus className="h-4 w-4 mr-2" />
             Reservasi Manual
           </Button>
-          {/* <div></div>  */}
+          <Button
+            onClick={() => setIsManualRegisterOpen(true)}
+            className="bg-[#132a13] hover:bg-[#31572c] cursor-pointer"
+          >
+            <UserPlus className="h-4 w-4 mr-2" />
+            Daftar
+          </Button>
         </div>
-        <div>Untuk pasien yang ga bisa daftar lewat online</div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">

@@ -33,8 +33,13 @@ const menuItems = [
         icon: Calendar,
       },
       {
-        title: "Atur Antrian",
+        title: "Daftar Reservasi",
         url: "/dashboard/appointment-management",
+        icon: CalendarCheck,
+      },
+      {
+        title: "Daftar Antrian",
+        url: "/dashboard/queue-management",
         icon: CalendarCheck,
       },
     ],
