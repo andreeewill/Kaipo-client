@@ -55,3 +55,37 @@ Question - PR
 2. Pindah ke docs -> Jira dipakai Dev kalo fitur udah fix, Jira yang udah ada biarin aja utk referensi
 3. Rombak status jadi ikut satu sehat
 
+
+
+## Modul RME
+1. Data Basic ke RME
+2. Data Riwayat Medis
+3. Antrian Dokter 
+
+- New Patient flow
+Isi Riwayat Awal
+
+- Existing Patient flow
+View only on history / basic detail
+
+
+
+4. Pemeriksaan klinis
+    Pilih lokasi, 
+        if ALL, langsung isi tindakan
+        if RA/RB (pilih rahang), langsung isi tindakan
+        IF kode gigi - nama gigi
+            Pilih Keadaan
+            Pilih Jenis Restorasi
+            Visualkan hasil pilihannya ke Odontogram chart
+
+    Keterangan / Keluhan
+        Ada teks template di text area nya
+
+
+
+5. Diagnosa
+Change AI Diagnosis to Diagnosa
+Move the content for AI Diagnosis summary to below, on top of it, should have an autocomplete for Diagnosa and ICD 10 with an AI icon (suggesting that the Diagnosa input box have an AI feature to find the matching ICD 10).
+
+Below it, If ALL/ RA/ RB is chosen on Pemeriksaan, show the summary on the Keterangan / Keluhan

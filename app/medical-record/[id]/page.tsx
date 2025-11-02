@@ -15,6 +15,18 @@ import { PatientPayment } from "@/components/medical-record/PatientPayment";
 import { AddMedicalHistoryDialog } from "@/components/medical-record/AddMedicalHistoryDialog";
 import { ArrowLeft, Calendar, User, FileText, Brain, Smile, CreditCard, Activity } from "lucide-react";
 
+// Define missing types
+interface ExaminationEntry {
+  id: string;
+  selectedLocation: string;
+  complaint: string;
+  toothCondition: {
+    location: string;
+    condition: string;
+    restoration: string;
+  };
+}
+
 // Mock data - in a real app, this would come from an API
 const generatePatientDetail = (id: string) => {
   return {
@@ -97,22 +109,22 @@ const generatePatientDetail = (id: string) => {
     ],
     odontogramData: {
       teeth: {
-        "11": { status: "healthy", notes: "" },
-        "12": { status: "healthy", notes: "" },
-        "13": { status: "healthy", notes: "" },
-        "14": { status: "healthy", notes: "" },
-        "15": { status: "healthy", notes: "" },
-        "16": { status: "filled", notes: "Composite filling" },
-        "17": { status: "healthy", notes: "" },
-        "18": { status: "missing", notes: "Extracted" },
-        "21": { status: "healthy", notes: "" },
-        "22": { status: "healthy", notes: "" },
-        "23": { status: "healthy", notes: "" },
-        "24": { status: "healthy", notes: "" },
-        "25": { status: "healthy", notes: "" },
-        "26": { status: "healthy", notes: "" },
-        "27": { status: "healthy", notes: "" },
-        "28": { status: "healthy", notes: "" },
+        "11": { status: "healthy" as const, notes: "" },
+        "12": { status: "healthy" as const, notes: "" },
+        "13": { status: "healthy" as const, notes: "" },
+        "14": { status: "healthy" as const, notes: "" },
+        "15": { status: "healthy" as const, notes: "" },
+        "16": { status: "filled" as const, notes: "Composite filling" },
+        "17": { status: "healthy" as const, notes: "" },
+        "18": { status: "missing" as const, notes: "Extracted" },
+        "21": { status: "healthy" as const, notes: "" },
+        "22": { status: "healthy" as const, notes: "" },
+        "23": { status: "healthy" as const, notes: "" },
+        "24": { status: "healthy" as const, notes: "" },
+        "25": { status: "healthy" as const, notes: "" },
+        "26": { status: "healthy" as const, notes: "" },
+        "27": { status: "healthy" as const, notes: "" },
+        "28": { status: "healthy" as const, notes: "" },
       },
       lastUpdate: "2024-11-01",
     },
@@ -131,7 +143,7 @@ const generatePatientDetail = (id: string) => {
           { name: "Chlorhexidine Mouthwash", price: 25000, quantity: 1 },
         ],
         totalAmount: 640000,
-        paymentStatus: "Paid",
+        paymentStatus: "Paid" as const,
         paymentMethod: "BPJS + Cash",
         notes: "Covered by BPJS: 70%, Patient payment: 30%",
       },
@@ -145,7 +157,7 @@ const generatePatientDetail = (id: string) => {
         ],
         medicines: [],
         totalAmount: 350000,
-        paymentStatus: "Paid",
+        paymentStatus: "Paid" as const,
         paymentMethod: "Cash",
         notes: "Full payment by patient",
       },
@@ -157,10 +169,16 @@ export default function PatientDetailPage() {
   const params = useParams();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("personal");
-  const [examinationData, setExaminationData] = useState<Record<string, unknown>>({
-    selectedLocation: "",
-    complaint: "",
-    toothCondition: null
+  const [examinationData, setExaminationData] = useState<{
+    examinationEntries: ExaminationEntry[];
+    intraoralData?: Record<string, unknown>;
+    extraoralData?: Record<string, unknown>;
+    radiographyData?: Record<string, unknown>;
+  }>({
+    examinationEntries: [],
+    intraoralData: {},
+    extraoralData: {},
+    radiographyData: {}
   });
   
   const patientId = params.id as string;
@@ -168,7 +186,12 @@ export default function PatientDetailPage() {
 
   const isNewPatient = patient.encounters.length === 0;
 
-  const handleExaminationUpdate = useCallback((data: Record<string, unknown>) => {
+  const handleExaminationUpdate = useCallback((data: {
+    examinationEntries: ExaminationEntry[];
+    intraoralData?: Record<string, unknown>;
+    extraoralData?: Record<string, unknown>;
+    radiographyData?: Record<string, unknown>;
+  }) => {
     setExaminationData(data);
   }, []);
 

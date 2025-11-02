@@ -84,11 +84,11 @@ export function AppSidebar() {
   const [isExpanded, setIsExpanded] = useState(true);
   const [expandedMenus, setExpandedMenus] = useState(new Set());
 
-  const isActive = (url: string) => {
+  const isActive = useCallback((url: string) => {
     const normalizedPathname = pathname.replace(/\/$/, "");
     const normalizedUrl = url.replace(/\/$/, "");
     return normalizedPathname === normalizedUrl;
-  };
+  }, [pathname]);
 
   const isMenuActive = useCallback((item) => {
     if (item.url) {
@@ -98,7 +98,7 @@ export function AppSidebar() {
       return item.submenu.some(subItem => isActive(subItem.url));
     }
     return false;
-  }, [pathname]); // Only depend on pathname since isActive depends on pathname
+  }, [isActive]);
 
   const toggleMenu = (menuTitle) => {
     const newExpandedMenus = new Set(expandedMenus);
@@ -143,7 +143,7 @@ export function AppSidebar() {
     if (JSON.stringify(currentExpandedArray) !== JSON.stringify(newExpandedArray)) {
       setExpandedMenus(newExpandedMenus);
     }
-  }, [pathname, isMenuActive]); // Remove expandedMenus from dependencies to avoid infinite loop
+  }, [isMenuActive, expandedMenus]);
 
   return (
     <>
