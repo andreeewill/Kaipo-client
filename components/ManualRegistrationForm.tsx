@@ -26,9 +26,11 @@ import { useCreateReservation } from "@/lib/queries/mutations/useCreateReservati
 interface ManualRegistrationFormProps {
   onClose: () => void;
   onSuccess: () => void;
+  source: 'WHATSAPP' | 'WALKIN';
+  title?: string;
 }
 
-export function ManualRegistrationForm({ onClose, onSuccess }: ManualRegistrationFormProps) {
+export function ManualRegistrationForm({ onClose, onSuccess, source, title }: ManualRegistrationFormProps) {
   const [selectedBranch, setSelectedBranch] = useState("");
   const [selectedDoctor, setSelectedDoctor] = useState("");
   const [selectedDate, setSelectedDate] = useState<Date>();
@@ -95,6 +97,7 @@ export function ManualRegistrationForm({ onClose, onSuccess }: ManualRegistratio
         complaint: formData.complaint,
         timeslotId: selectedTimeslot,
         date: format(selectedDate, "yyyy-MM-dd"),
+        source: source,
       });
       
       onSuccess();
@@ -114,7 +117,7 @@ export function ManualRegistrationForm({ onClose, onSuccess }: ManualRegistratio
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <User className="h-5 w-5" />
-            <span>Informasi Pasien</span>
+            <span>{title || `Registrasi ${source === 'WHATSAPP' ? 'WhatsApp' : 'Walk-in'}`}</span>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">

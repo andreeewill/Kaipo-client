@@ -197,7 +197,10 @@ export default function ClinicsPage() {
     }
 
     try {
-      await createReservationMutation.mutateAsync(formData);
+      await createReservationMutation.mutateAsync({
+        ...formData,
+        source: 'WEBSITE'
+      });
       toast.success("Pendaftaran berhasil! Kami akan menghubungi Anda segera.");
       handleCloseModal();
     } catch (error) {

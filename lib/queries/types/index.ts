@@ -190,13 +190,24 @@ export interface Timeslot {
 }
 
 export interface Reservation {
+  id?: string
   name: string
   complaint: string
   doctorName: string
   phone: string
   startTime: string
   endTime: string
-  status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED'
+  status: 'CREATED' | 'UNDER_REVIEW' | 'SCHEDULED' | 'ENCOUNTER_READY' | 'IN_ENCOUNTER' | 'COMPLETED' | 'CANCELLED'
+  source: 'WEBSITE' | 'WHATSAPP' | 'WALKIN'
+  createdBy?: string
+  notes?: string
+  isDuplicate?: boolean
+  duplicateOf?: string
+  scheduledDateTime?: string
+  branchId?: string
+  doctorId?: string
+  createdAt?: string
+  updatedAt?: string
 }
 
 export interface CreateReservationData {
@@ -205,6 +216,45 @@ export interface CreateReservationData {
   complaint: string
   timeslotId: string
   date: string
+  source?: 'WEBSITE' | 'WHATSAPP' | 'WALKIN'
+  notes?: string
+}
+
+export interface BasicPatientData {
+  id: string
+  name: string
+  phone: string
+  complaint: string
+  doctorId?: string
+  doctorName?: string
+  clinicId?: string
+  branchId?: string
+  branchName?: string
+  scheduledDateTime?: string
+  source: 'WEBSITE' | 'WHATSAPP' | 'WALKIN'
+  status: 'CREATED' | 'UNDER_REVIEW' | 'SCHEDULED' | 'ENCOUNTER_READY' | 'IN_ENCOUNTER' | 'COMPLETED' | 'CANCELLED'
+  isDuplicate?: boolean
+  duplicateOf?: string
+  createdBy?: string
+  notes?: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface SchedulingConfirmation {
+  basicDataId: string
+  finalDateTime: string
+  finalDoctorId: string
+  finalBranchId: string
+  adminNotes?: string
+  confirmationType: 'DIRECT_CONFIRM' | 'RESCHEDULE' | 'FIRST_TIME_SCHEDULE'
+}
+
+export interface DuplicateCheck {
+  isLikelyDuplicate: boolean
+  matchScore: number
+  matchedRecords: BasicPatientData[]
+  matchCriteria: 'NAME' | 'PHONE' | 'BOTH'
 }
 
 // Error types

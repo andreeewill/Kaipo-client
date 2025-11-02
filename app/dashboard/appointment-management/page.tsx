@@ -38,10 +38,10 @@ import {
   MessageCircle,
   Clock,
   User,
-  UserPlus,
   RefreshCw,
   Archive,
   AlertTriangle,
+  CalendarCheck,
 } from "lucide-react";
 import {
   useReservations,
@@ -54,35 +54,41 @@ import { id } from "date-fns/locale";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { ManualRegistrationForm } from "@/components/ManualRegistrationForm";
 
-// Status colors and labels
+// Status colors and labels - Updated for scheduled appointments
 const STATUS_CONFIG = {
-  PENDING: {
-    label: "Menunggu",
-    color: "bg-yellow-100 text-yellow-800",
-    icon: Clock,
-  },
-  CONFIRMED: {
-    label: "Dikonfirmasi",
+  SCHEDULED: {
+    label: "Terjadwal",
     color: "bg-green-100 text-green-800",
     icon: Calendar,
+  },
+  ENCOUNTER_READY: {
+    label: "Siap Encounter",
+    color: "bg-purple-100 text-purple-800",
+    icon: CalendarCheck,
+  },
+  IN_ENCOUNTER: {
+    label: "Sedang Encounter",
+    color: "bg-blue-100 text-blue-800",
+    icon: Clock,
+  },
+  COMPLETED: {
+    label: "Selesai",
+    color: "bg-gray-100 text-gray-800",
+    icon: RefreshCw,
   },
   CANCELLED: {
     label: "Dibatalkan",
     color: "bg-red-100 text-red-800",
     icon: Archive,
   },
-  COMPLETED: {
-    label: "Selesai",
-    color: "bg-blue-100 text-blue-800",
-    icon: RefreshCw,
-  },
 };
 
 const STATUS_TRANSITIONS = {
-  PENDING: ["CONFIRMED", "CANCELLED"],
-  CONFIRMED: ["COMPLETED", "CANCELLED"],
-  CANCELLED: [],
+  SCHEDULED: ["ENCOUNTER_READY", "CANCELLED"],
+  ENCOUNTER_READY: ["IN_ENCOUNTER", "CANCELLED"],
+  IN_ENCOUNTER: ["COMPLETED"],
   COMPLETED: [],
+  CANCELLED: [],
 };
 
 export default function AppointmentManagementPage() {
@@ -266,19 +272,19 @@ export default function AppointmentManagementPage() {
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
-              Manajemen Appointment
+              Manajemen Appointment Terjadwal
             </h1>
             <p className="text-gray-600 mt-2">
-              Kelola jadwal dan status appointment pasien
+              Kelola appointment yang sudah dikonfirmasi dan terjadwal
             </p>
           </div>
-          <Button
+          {/* <Button
             onClick={() => setIsManualRegisterOpen(true)}
             className="bg-[#132a13] hover:bg-[#31572c] cursor-pointer"
           >
             <UserPlus className="h-4 w-4 mr-2" />
             Reservasi Manual
-          </Button>
+          </Button> */}
           {/* <div></div>  */}
         </div>
         <div>Untuk pasien yang ga bisa daftar lewat online</div>
@@ -706,6 +712,7 @@ export default function AppointmentManagementPage() {
             </DialogHeader>
 
             <ManualRegistrationForm
+              source="WALKIN"
               onClose={() => setIsManualRegisterOpen(false)}
               onSuccess={() => {
                 setIsManualRegisterOpen(false);

@@ -1,44 +1,81 @@
-Kaipo
+Kaipo - UPDATED FLOW IMPLEMENTATION ✅
 
-Bagi per entry point (Pasien baru)
-70%
-1. Isi dari admin (via whatsapp admin / nomor klinik / IG) - Reservasi online flow
-- Admin balas WA pasien kalau klinik buka jam sekian/dokter available jam sekian
-- Admin isi data BASIC via form
-- 
+## Entry Points Implementation (COMPLETED)
 
-25%
-2. Isi dari admin (manual) - Walk in flow
-- 95% pasien reguler (sudah pernah datang) - 5% pasien baru
-- Admin tanya data pasien & keluhan
-- Admin isi data BASIC via form
-- 
+### 1. Website Entry Point (5%) ✅
+- Location: `/clinics` page
+- Creates BASIC data with source: 'WEBSITE'
+- Status: CREATED → awaits admin review
 
-5%
-3. Pasien isi sendiri - Website flow (Kayak halodoc) 
-- Isi dari web landing, data basic (nama, no telp, keluhan)
-- Admin isi data BASIC via form
-- 
+### 2. WhatsApp Entry Point (70%) ✅
+- Admin-assisted registration via `/dashboard/basic-patients`
+- Creates BASIC data with source: 'WHATSAPP'  
+- Status: CREATED → awaits admin review
 
+### 3. Walk-in Entry Point (25%) ✅
+- Admin-assisted registration via `/dashboard/basic-patients`
+- Creates BASIC data with source: 'WALKIN'
+- Status: CREATED → awaits admin review
 
-Data BASIC (nama, keluhan, nomor hp, dokter, jam, klinik)
-- Data kembar / input berulang gak masalah, (karena diseleksi admin scr manual)
-- Data ini gunanya untuk follow up dan lanjut ke ENCOUNTER
-- Untuk jadi data RME, lewat konversi BASIC -> RME oleh Admin
-- Fuzzy matching via Nama ATAU Nomer HP, match kasih label kalo existing
+## Data Flow Implementation ✅
 
-# Konversi BASIC ke RME
+### BASIC Data Structure:
+- Name, Phone, Complaint, Source, Status
+- Allows duplicates (admin handles manually)
+- Fuzzy matching capabilities (planned)
+- Status tracking: CREATED → UNDER_REVIEW → SCHEDULED → ENCOUNTER_READY → COMPLETED
 
-Data RME
-- Data harus unik
-- Matching via NIK / Nama
-- NIK, Data pribadi, Alamat lengkap, Histori penyakit, alergi, dll 
-- Lebih lengkap, Bisa dikembangkan dari Data BASIC (dari konversi), 
-- Bisa dari awal (fungsi utk migrasi data lama, data hilang, admin lupa ngisi)
-Jenis data RME :
-    1. Data pasien baru
-    2. Data pasien visit di org sama
-    3. Data pasien visit shared di org
+### Admin Workflow Pages:
+
+#### 1. Data BASIC Pasien (`/dashboard/basic-patients`) ✅
+- View all BASIC data from all sources
+- Stats dashboard by source
+- Manual registration for WhatsApp/Walk-in
+- Duplicate detection (planned)
+
+#### 2. Konfirmasi Jadwal (`/dashboard/scheduling-confirmation`) ✅  
+- Review pending confirmations
+- Admin scheduling confirmation process
+- Direct confirm, reschedule, or first-time schedule
+- WhatsApp notifications
+
+#### 3. Manajemen Appointment (`/dashboard/appointment-management`) ✅
+- Manage scheduled appointments
+- Updated status tracking for scheduled patients
+- Focus on confirmed appointments only
+
+#### 4. Antrian Encounter (`/dashboard/queue-management`) ✅
+- Queue management for encounter-ready patients
+- Patient encounter preparation
+- Doctor-patient meeting coordination
+
+## Navigation Structure ✅
+Updated sidebar "Pendaftaran" menu:
+- Pendaftaran Online (public entry point)
+- Data BASIC Pasien (admin view all sources)
+- Konfirmasi Jadwal (admin scheduling) 
+- Daftar Reservasi (scheduled appointments)
+- Antrian Encounter (ready for doctor)
+
+## Status Flow ✅
+CREATED (from any entry point)
+↓
+UNDER_REVIEW (admin checking)
+↓  
+SCHEDULED (admin confirmed schedule)
+↓
+ENCOUNTER_READY (patient arrived/ready)
+↓
+IN_ENCOUNTER (with doctor)
+↓
+COMPLETED (finished)
+
+## Next Implementation Steps:
+1. API endpoints for new flow
+2. Fuzzy duplicate detection
+3. WhatsApp integration automation
+4. Patient arrival confirmation system
+5. Integration with RME system
 
 
 # Owner

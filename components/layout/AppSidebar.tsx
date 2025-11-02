@@ -12,6 +12,7 @@ import {
   CalendarCheck,
   ChevronDown,
   ChevronUp,
+  User,
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
@@ -34,11 +35,16 @@ const menuItems = [
       },
       {
         title: "Daftar Reservasi",
+        url: "/dashboard/basic-patients",
+        icon: User,
+      },
+      {
+        title: "Daftar Reservasi",
         url: "/dashboard/appointment-management",
         icon: CalendarCheck,
       },
       {
-        title: "Daftar Antrian",
+        title: "Antrian Encounter",
         url: "/dashboard/queue-management",
         icon: CalendarCheck,
       },
@@ -137,13 +143,16 @@ export function AppSidebar() {
     });
     
     // Only update if there's actually a change
-    const currentExpandedArray = Array.from(expandedMenus).sort();
-    const newExpandedArray = Array.from(newExpandedMenus).sort();
-    
-    if (JSON.stringify(currentExpandedArray) !== JSON.stringify(newExpandedArray)) {
-      setExpandedMenus(newExpandedMenus);
-    }
-  }, [isMenuActive, expandedMenus]);
+    setExpandedMenus(prevExpandedMenus => {
+      const currentExpandedArray = Array.from(prevExpandedMenus).sort();
+      const newExpandedArray = Array.from(newExpandedMenus).sort();
+      
+      if (JSON.stringify(currentExpandedArray) !== JSON.stringify(newExpandedArray)) {
+        return newExpandedMenus;
+      }
+      return prevExpandedMenus;
+    });
+  }, [isMenuActive]);
 
   return (
     <>

@@ -38,7 +38,6 @@ import {
   MessageCircle,
   Clock,
   User,
-  UserPlus,
   RefreshCw,
   Archive,
   AlertTriangle,
@@ -266,26 +265,12 @@ export default function AppointmentManagementPage() {
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
-              Manajemen Appointment
+              Antrian Encounter
             </h1>
             <p className="text-gray-600 mt-2">
-              Kelola jadwal dan status appointment pasien
+              Kelola antrian pasien yang siap untuk encounter dengan dokter
             </p>
           </div>
-          <Button
-            onClick={() => setIsManualRegisterOpen(true)}
-            className="bg-[#132a13] hover:bg-[#31572c] cursor-pointer"
-          >
-            <UserPlus className="h-4 w-4 mr-2" />
-            Reservasi Manual
-          </Button>
-          <Button
-            onClick={() => setIsManualRegisterOpen(true)}
-            className="bg-[#132a13] hover:bg-[#31572c] cursor-pointer"
-          >
-            <UserPlus className="h-4 w-4 mr-2" />
-            Daftar
-          </Button>
         </div>
 
         {/* Stats Cards */}
@@ -711,6 +696,7 @@ export default function AppointmentManagementPage() {
             </DialogHeader>
 
             <ManualRegistrationForm
+              source="WALKIN"
               onClose={() => setIsManualRegisterOpen(false)}
               onSuccess={() => {
                 setIsManualRegisterOpen(false);
