@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   CircuitBoard,
   Calendar,
@@ -45,19 +45,36 @@ const menuItems = [
     ],
   },
   {
-    title: "Medical Record",
+    title: "Penjadwalan",
+    icon: CalendarCheck,
+    submenu: [
+      {
+        title: "Kalender",
+        url: "/dashboard/scheduling",
+        icon: Calendar,
+      },
+    ],
+  },
+  {
+    title: "Rekam Medik Elektronik (RME)",
     url: "/medical-record", 
     icon: Stethoscope,
   },
   {
-    title: "Odontogram",
-    url: "/odontogram",
-    icon: Smile,
-  },
-  {
-    title: "AI Diagnosis",
-    url: "/dashboard/ai-diagnosis",
+    title: "Fitur Khusus",
     icon: Brain,
+    submenu: [
+      {
+        title: "Odontogram",
+        url: "/odontogram",
+        icon: Smile,
+      },
+      {
+        title: "AI Diagnosis",
+        url: "/dashboard/ai-diagnosis",
+        icon: Brain,
+      },
+    ],
   },
 ];
 
@@ -73,7 +90,7 @@ export function AppSidebar() {
     return normalizedPathname === normalizedUrl;
   };
 
-  const isMenuActive = (item) => {
+  const isMenuActive = useCallback((item) => {
     if (item.url) {
       return isActive(item.url);
     }
@@ -81,7 +98,7 @@ export function AppSidebar() {
       return item.submenu.some(subItem => isActive(subItem.url));
     }
     return false;
-  };
+  }, [pathname]); // Only depend on pathname since isActive depends on pathname
 
   const toggleMenu = (menuTitle) => {
     const newExpandedMenus = new Set(expandedMenus);
@@ -112,7 +129,7 @@ export function AppSidebar() {
 
   // Auto-expand menus that contain active items
   useEffect(() => {
-    const newExpandedMenus = new Set();
+    const newExpandedMenus = new Set<string>();
     menuItems.forEach(item => {
       if (item.submenu && isMenuActive(item)) {
         newExpandedMenus.add(item.title);
@@ -126,7 +143,7 @@ export function AppSidebar() {
     if (JSON.stringify(currentExpandedArray) !== JSON.stringify(newExpandedArray)) {
       setExpandedMenus(newExpandedMenus);
     }
-  }, [pathname]); // Only depend on pathname
+  }, [pathname, isMenuActive]); // Remove expandedMenus from dependencies to avoid infinite loop
 
   return (
     <>
@@ -135,7 +152,7 @@ export function AppSidebar() {
         {/* Logo area */}
         <div className="flex items-center justify-center h-16 border-b border-gray-200">
           <Image
-            src="/icon.jpg"
+            src="/kaipo.png"
             width={32}
             height={32}
             alt="Kaipo"
@@ -194,7 +211,7 @@ export function AppSidebar() {
         <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200">
           <div className={`flex items-center transition-opacity duration-300 ${isExpanded ? "opacity-100" : "opacity-0"}`}>
             <Image
-              src="/icon.jpg"
+              src="/kaipo.png"
               width={32}
               height={32}
               alt="Kaipo"

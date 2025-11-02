@@ -197,7 +197,7 @@ const dummyData = generateDummyData();
 export default function Schedule() {
   const { isAuthenticated } = useAuthStore();
   const router = useRouter();
-  const [selected] = useState("Jadwal Pasien");
+  const [selected] = useState("Rekam Medik Elektronik (RME)");
   const [search, setSearch] = useState("");
   const [sortColumn, setSortColumn] = useState("id");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
@@ -250,6 +250,10 @@ export default function Schedule() {
     );
   };
 
+  const handleDetailsClick = (patient: Patient) => {
+    router.push(`/medical-record/${patient.id}`);
+  };
+
   const filteredData = patientData
     .filter((row) =>
       Object.values(row).some((value) =>
@@ -299,7 +303,7 @@ export default function Schedule() {
                   d="M12 4v16m8-8H4"
                 />
               </svg>
-              Add Medical Record
+              Tambah RME
             </Button>
           </div>
 
@@ -371,7 +375,7 @@ export default function Schedule() {
             onRowClick={setSelectedRow}
             onToggleExpansion={toggleRowExpansion}
             onStatusUpdate={updatePatientStatus}
-            onDetailsClick={setDetailedView}
+            onDetailsClick={handleDetailsClick}
             onSort={handleSort}
           />
 
