@@ -49,8 +49,14 @@ RUN --mount=type=cache,id=pnpm-store,target=/pnpm-store pnpm install --offline -
 # Bring in the full application source
 COPY . .
 
+# Accept build arguments for Next.js environment variables
+ARG NEXT_PUBLIC_API_BASE_URL=https://apiuat.kaipo.my.id
+ARG NEXT_PUBLIC_APP_NAME=Kaipo
+
 # Set build-time environment variables for Next.js
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL
+ENV NEXT_PUBLIC_APP_NAME=$NEXT_PUBLIC_APP_NAME
 
 # Build Next.js application
 RUN pnpm build

@@ -31,7 +31,9 @@ function LoginPageContent() {
 
   // Set dev_mode cookie whenever devMode changes
   useEffect(() => {
-    document.cookie = `dev_mode=${devMode}; path=/; max-age=${60*60*24*30}`; // 30 days
+    document.cookie = `dev_mode=${devMode}; path=/; max-age=${
+      60 * 60 * 24 * 30
+    }`; // 30 days
   }, [devMode]);
 
   const handleBasicLogin = async (e: React.FormEvent) => {
@@ -39,11 +41,11 @@ function LoginPageContent() {
     setIsLoading(true);
 
     // In development mode, bypass actual authentication
-    console.log("🚀 ~ handleBasicLogin ~ devMode:", devMode)
+    console.log("🚀 ~ handleBasicLogin ~ devMode:", devMode);
     if (devMode) {
       // Set dev_mode cookie for middleware
-      document.cookie = `dev_mode=true; path=/; max-age=${60*60*24*30}`; // 30 days
-      
+      document.cookie = `dev_mode=true; path=/; max-age=${60 * 60 * 24 * 30}`; // 30 days
+
       // Simulate a short delay for better UX
       setTimeout(() => {
         setAuthenticated(true);
@@ -54,24 +56,29 @@ function LoginPageContent() {
       return;
     } else {
       // Clear dev_mode cookie when not in dev mode
-      document.cookie = `dev_mode=false; path=/; max-age=${60*60*24*30}`; // 30 days
+      document.cookie = `dev_mode=false; path=/; max-age=${60 * 60 * 24 * 30}`; // 30 days
     }
 
     // Real authentication flow for production
     try {
-      const response = await fetch("https://api.kaipo.my.id/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-        credentials: "include", // Important for cookies
-      });
+      const response = await fetch(
+        `${
+          process.env.NEXT_PUBLIC_API_BASE_URL || "https://apiuat.kaipo.my.id"
+        }/auth/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+          credentials: "include", // Important for cookies
+        }
+      );
 
       if (response.status === 204) {
         // Success - JWT cookie is set
         console.log("LOGIN SUCCESS");
-        
+
         // Wait a bit for cookie to be set, then update auth state
         setTimeout(() => {
           setAuthenticated(true);
@@ -154,7 +161,10 @@ function LoginPageContent() {
             <div className="flex flex-col space-y-3">
               {/* Development mode toggle */}
               <div className="flex items-center justify-between text-sm">
-                <label htmlFor="devMode" className="flex items-center text-gray-700">
+                <label
+                  htmlFor="devMode"
+                  className="flex items-center text-gray-700"
+                >
                   <input
                     id="devMode"
                     type="checkbox"
@@ -171,11 +181,7 @@ function LoginPageContent() {
                 )}
               </div>
 
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className="w-full"
-              >
+              <Button type="submit" disabled={isLoading} className="w-full">
                 {isLoading ? (
                   <div className="flex items-center">
                     <svg
