@@ -1,0 +1,86 @@
+name: Helm Upgrade Action
+description: GitHub Action to perform Helm upgrade for Kaipo Client
+
+inputs:
+  name:
+    required: true
+    description: Helm release name
+  path:
+    required: true
+    description: Path to Helm chart
+  namespace:
+    required: true
+    description: Kubernetes namespace
+  sets:
+    required: false
+    description: Additional --set parameters for Helm upgrade
+  valuesFiles:
+    required: false
+    description: Additional -f values files for Helm upgrade
+  setFiles:
+    required: false
+    description: Additional --set-file parameters for Helm upgrade (key=filepath format)
+  extraArgs:
+    required: false
+    description: Extra arguments for Helm upgrade command
+  kubeconfig:
+    required: false
+    description: Path to kubeconfig file (if requires sudo access)
+  useSudo:
+    required: false
+    description: Whether to use sudo for helm command (default false)
+
+runs:
+  using: "composite"
+  steps:
+    - name: Run Helm Upgrade
+      shell: bash
+      run: |
+        # Build command with proper array handling for special characters
+        HELM_ARGS=("helm" "upgrade" "--install" "${{ inputs.name }}" "${{ inputs.path }}")
+        HELM_ARGS+=("--namespace" "${{ inputs.namespace }}")
+
+        # Add --set arguments
+        if [ -n "${{ inputs.sets }}" ]; then
+          while IFS= read -r line; do
+            if [ -n "${line}" ]; then
+              HELM_ARGS+=("--set" "${line}")
+            fi
+          done <<< "${{ inputs.sets }}"
+        fi
+
+        # Add -f values files
+        if [ -n "${{ inputs.valuesFiles }}" ]; then
+          while IFS= read -r line; do
+            if [ -n "${line}" ]; then
+              HELM_ARGS+=("-f" "${line}")
+            fi
+          done <<< "${{ inputs.valuesFiles }}"
+        fi
+
+        # Add --set-file arguments
+        if [ -n "${{ inputs.setFiles }}" ]; then
+          while IFS= read -r line; do
+            if [ -n "${line}" ]; then
+              HELM_ARGS+=("--set-file" "${line}")
+            fi
+          done <<< "${{ inputs.setFiles }}"
+        fi
+
+        # Add extra arguments
+        if [ -n "${{ inputs.extraArgs }}" ]; then
+          read -ra EXTRA <<< "${{ inputs.extraArgs }}"
+          HELM_ARGS+=("${EXTRA[@]}")
+        fi
+
+        # Execute with or without sudo
+        echo "🚀 Running Helm upgrade for Kaipo Client..."
+        if [ "${{ inputs.useSudo }}" = "true" ]; then
+          if [ -n "${{ inputs.kubeconfig }}" ]; then
+            sudo env KUBECONFIG="${{ inputs.kubeconfig }}" "${HELM_ARGS[@]}"
+          else
+            sudo "${HELM_ARGS[@]}"
+          fi
+        else
+          "${HELM_ARGS[@]}"
+        fi

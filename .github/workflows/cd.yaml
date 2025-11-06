@@ -1,0 +1,109 @@
+name: Build, Push and Deploy
+
+on:
+  push:
+    branches: [uat]
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository_owner }}/kaipo-client
+  CHART_PATH: deploy/helm/kaipo-client
+  RELEASE_NAME: kaipo-client
+  NAMESPACE: kaipo
+
+jobs:
+  build-and-push:
+    name: Build and Push
+    runs-on: ubuntu-latest
+    outputs:
+      short-sha: ${{ steps.meta.outputs.SHORT_SHA }}
+      version: ${{ steps.meta.outputs.VERSION }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Compute metadata
+        id: meta
+        run: |
+          echo "VERSION=${GITHUB_REF_NAME}-${GITHUB_RUN_NUMBER}" >> $GITHUB_OUTPUT
+          echo "REVISION=${GITHUB_SHA}" >> $GITHUB_OUTPUT
+          echo "BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_OUTPUT
+          SHORT_SHA=$(echo "$GITHUB_SHA" | cut -c1-12)
+          echo "SHORT_SHA=${SHORT_SHA}" >> $GITHUB_OUTPUT
+
+      - name: Build and push (multi-arch)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.SHORT_SHA }}
+          build-args: |
+            VERSION=${{ steps.meta.outputs.VERSION }}
+            REVISION=${{ steps.meta.outputs.REVISION }}
+            BUILD_DATE=${{ steps.meta.outputs.BUILD_DATE }}
+          cache-from: |
+            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache
+            type=gha
+          cache-to: |
+            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
+            type=gha,mode=max
+
+  deploy-to-k3s:
+    name: Deployment (K3s)
+    needs: build-and-push
+    environment: kaipo-client-uat
+    concurrency:
+      group: deploy-kaipo-client-uat
+      cancel-in-progress: true
+    runs-on: self-hosted
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy with Helm
+        uses: ./.github/actions/helm-upgrade
+        with:
+          name: ${{ env.RELEASE_NAME }}
+          path: ${{ env.CHART_PATH }}
+          namespace: ${{ env.NAMESPACE }}
+          sets: |
+            loki.enabled=false
+            image.repository=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+            image.tag=${{ needs.build-and-push.outputs.short-sha }}
+            image.pullPolicy=IfNotPresent
+            configmap.enabled=true
+            ingress.enabled=true
+            ingress.hosts[0].host=${{ vars.FRONTEND_DOMAIN || 'uat.kaipo.my.id' }}
+            ingress.annotations.traefik\.ingress\.kubernetes\.io/router\.entrypoints=websecure
+            ingress.tls.enabled=${{ vars.INGRESS_TLS || 'false' }}
+            ingress.tls.secretName=${{ secrets.INGRESS_TLS_SECRET || 'kaipo-client-tls' }}
+            envVars.NODE_ENV=${{ vars.NODE_ENV || 'production' }}
+            envVars.PORT=3000
+            envVars.NEXT_TELEMETRY_DISABLED=1
+            envVars.NEXT_PUBLIC_API_BASE_URL=${{ vars.NEXT_PUBLIC_API_BASE_URL || 'https://apiuat.kaipo.my.id' }}
+            envVars.NEXT_PUBLIC_APP_NAME=${{ vars.NEXT_PUBLIC_APP_NAME || 'Kaipo' }}
+          extraArgs: --wait --timeout 5m --create-namespace
+          kubeconfig: /home/andrewilliam/.kube/config
+          useSudo: true
