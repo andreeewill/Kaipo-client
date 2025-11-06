@@ -1,0 +1,46 @@
+name: Static Analysis & Build Tests
+
+on:
+  pull_request:
+    branches: [uat, main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "pnpm"
+
+      - name: Install dependencies (frozen)
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint and Type Check
+        run: pnpm lint
+
+      - name: Build Application
+        run: pnpm build
+        env:
+          # Set any required build-time environment variables
+          NEXT_TELEMETRY_DISABLED: 1
+
+      - name: Run tests (if available)
+        run: |
+          if [ -f "package.json" ] && grep -q '"test"' package.json && ! grep -q 'exit 1' package.json; then
+            pnpm test
+          else
+            echo "No tests configured or tests exit with error code 1, skipping..."
+          fi

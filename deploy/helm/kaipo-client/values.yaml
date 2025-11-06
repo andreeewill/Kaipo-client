@@ -1,0 +1,101 @@
+replicaCount: 2
+
+image:
+  repository: ghcr.io/andreeewill/kaipo-client
+  tag: "latest"
+  pullPolicy: IfNotPresent
+  # Optionally reference registry pull secrets (for private images)
+  pullSecrets: []
+  # - name: ghcr-pull
+
+service:
+  type: ClusterIP
+  port: 3000
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+podSecurityContext:
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+  runAsNonRoot: true
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: false # Next.js may need write access to /tmp for runtime files
+
+container:
+  port: 3000
+  env: []
+  # - name: NODE_ENV
+  #   value: production
+  # - name: NEXT_PUBLIC_API_BASE_URL
+  #   value: https://api.kaipo.my.id
+
+# Kubernetes ConfigMap for non-sensitive env values
+configmap:
+  enabled: false
+  data: {}
+  # NODE_ENV: production
+  # NEXT_PUBLIC_API_BASE_URL: https://api.kaipo.my.id
+  # NEXT_PUBLIC_APP_NAME: Kaipo
+
+# Kubernetes Secret to inject sensitive env values
+secret:
+  enabled: false
+  # name: "" # defaults to <fullname>-secret when empty
+  data: {}
+  # NEXT_PUBLIC_SUPABASE_URL: your-supabase-url
+  # NEXT_PUBLIC_SUPABASE_ANON_KEY: your-supabase-key
+
+ingress:
+  enabled: true
+  hosts:
+    - host: uat.kaipo.my.id
+  annotations:
+    # optional: add middlewares here
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+  tls:
+    enabled: false
+    secretName: kaipo-client-tls
+
+# Simple TCP probes for frontend app
+probes:
+  enabled: false # Disable probes for frontend - simple TCP checks are sufficient
+
+nodeSelector: {}
+
+affinity: {}
+
+tolerations: []
+
+autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+# Grafana Loki configuration
+loki:
+  enabled: false
+  labels:
+    app: kaipo-client
+    environment: production
+
+fullnameOverride: kaipo-client
+
+# Environment variables for the application
+envVars:
+  NODE_ENV: production
+  PORT: "3000"
+  NEXT_TELEMETRY_DISABLED: "1"
+  # Add your Next.js environment variables here
+  # NEXT_PUBLIC_API_BASE_URL: ""
+  # NEXT_PUBLIC_APP_NAME: "Kaipo"
