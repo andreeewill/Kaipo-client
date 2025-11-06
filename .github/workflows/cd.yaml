@@ -63,6 +63,8 @@ jobs:
             VERSION=${{ steps.meta.outputs.VERSION }}
             REVISION=${{ steps.meta.outputs.REVISION }}
             BUILD_DATE=${{ steps.meta.outputs.BUILD_DATE }}
+            NEXT_PUBLIC_API_BASE_URL=${{ vars.NEXT_PUBLIC_API_BASE_URL || 'https://apiuat.kaipo.my.id' }}
+            NEXT_PUBLIC_APP_NAME=${{ vars.NEXT_PUBLIC_APP_NAME || 'Kaipo' }}
           cache-from: |
             type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache
             type=gha

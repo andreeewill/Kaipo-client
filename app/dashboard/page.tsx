@@ -61,7 +61,13 @@ const PATIENT_STATUSES: Status[] = [
 // Generate dummy patient data for dashboard
 const generateDashboardPatientData = (): Patient[] => {
   const data = [];
-  const conditions = ["Hypertension", "Diabetes", "Asthma", "Arthritis", "Migraine"];
+  const conditions = [
+    "Hypertension",
+    "Diabetes",
+    "Asthma",
+    "Arthritis",
+    "Migraine",
+  ];
   const doctors = ["Dr. Smith", "Dr. Johnson", "Dr. Williams", "Dr. Brown"];
 
   for (let i = 1; i <= 30; i++) {
@@ -69,7 +75,7 @@ const generateDashboardPatientData = (): Patient[] => {
     const randomDays = Math.floor(Math.random() * 7) - 3; // -3 to +3 days from today
     const appointmentDate = new Date(today);
     appointmentDate.setDate(today.getDate() + randomDays);
-    
+
     data.push({
       id: i,
       name: `Patient ${i}`,
@@ -109,7 +115,7 @@ const generateDashboardPatientData = (): Patient[] => {
 
 export default function DashboardPage() {
   const { isAuthenticated, userInfo, logout } = useAuthStore();
-  console.log("🚀 ~ DashboardPage ~ isAuthenticated:", isAuthenticated)
+  console.log("🚀 ~ DashboardPage ~ isAuthenticated:", isAuthenticated);
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [selectedRole, setSelectedRole] = useState<string>("doctor");
@@ -119,9 +125,11 @@ export default function DashboardPage() {
   // Development mode toggle for middleware
   const [devMode, setDevMode] = useState(() => {
     // Initialize from cookie if in browser
-    if (typeof document !== 'undefined') {
-      const cookie = document.cookie.split('; ').find(row => row.startsWith('dev_mode='));
-      return cookie ? cookie.split('=')[1] === 'true' : true; // Default to true if no cookie
+    if (typeof document !== "undefined") {
+      const cookie = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("dev_mode="));
+      return cookie ? cookie.split("=")[1] === "true" : true; // Default to true if no cookie
     }
     return true; // Default to true
   });
@@ -129,26 +137,33 @@ export default function DashboardPage() {
   useEffect(() => {
     // In production mode, check authentication status
     if (!devMode && !isAuthenticated) {
-      router.push('/login')
-      return
+      router.push("/login");
+      return;
     }
     setIsLoading(false);
   }, [isAuthenticated, router, devMode]);
-  
+
   // Handle dev mode toggle
   const handleDevModeChange = (enabled: boolean) => {
     setDevMode(enabled);
     // Set cookie for middleware
-    document.cookie = `dev_mode=${enabled}; path=/; max-age=${60*60*24*30}`; // 30 days
+    document.cookie = `dev_mode=${enabled}; path=/; max-age=${
+      60 * 60 * 24 * 30
+    }`; // 30 days
   };
 
   const handleLogout = async () => {
     try {
       // Call logout endpoint to clear JWT cookie
-      await fetch("https://api.kaipo.my.id/auth/logout", {
-        method: "POST",
-        // credentials: 'include',
-      });
+      await fetch(
+        `${
+          process.env.NEXT_PUBLIC_API_BASE_URL || "https://apiuat.kaipo.my.id"
+        }/auth/logout`,
+        {
+          method: "POST",
+          // credentials: 'include',
+        }
+      );
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
@@ -223,7 +238,9 @@ export default function DashboardPage() {
                   }`}
                 ></div>
               </div>
-              <span className="ml-3 text-sm text-yellow-700">Development Mode</span>
+              <span className="ml-3 text-sm text-yellow-700">
+                Development Mode
+              </span>
             </label>
           </div>
         </div>
