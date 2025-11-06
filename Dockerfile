@@ -101,6 +101,9 @@ COPY --chown=nodejs:nodejs --from=build /app/public ./public
 # Copy Next.js config files if they exist
 COPY --chown=nodejs:nodejs --from=build /app/next.config.* ./
 
+# Create cache directory with proper permissions for Next.js image optimization
+RUN mkdir -p .next/cache/images && chown -R nodejs:nodejs .next/cache
+
 USER nodejs
 
 EXPOSE 3000

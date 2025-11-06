@@ -49,13 +49,14 @@ jobs:
           SHORT_SHA=$(echo "$GITHUB_SHA" | cut -c1-12)
           echo "SHORT_SHA=${SHORT_SHA}" >> $GITHUB_OUTPUT
 
-      - name: Build and push (multi-arch)
+      - name: Build and push
         uses: docker/build-push-action@v6
         with:
           context: .
           file: ./Dockerfile
           push: true
-          platforms: linux/amd64,linux/arm64
+          # Use ARM64 for UAT (Raspberry Pi 5), multi-platform for production
+          platforms: ${{ github.ref == 'refs/heads/main' && 'linux/amd64,linux/arm64' || 'linux/arm64' }}
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.SHORT_SHA }}
@@ -66,11 +67,12 @@ jobs:
             NEXT_PUBLIC_API_BASE_URL=${{ vars.NEXT_PUBLIC_API_BASE_URL || 'https://apiuat.kaipo.my.id' }}
             NEXT_PUBLIC_APP_NAME=${{ vars.NEXT_PUBLIC_APP_NAME || 'Kaipo' }}
           cache-from: |
+            type=gha,scope=${{ github.ref_name }}
+            type=gha,scope=main
             type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache
-            type=gha
           cache-to: |
+            type=gha,mode=max,scope=${{ github.ref_name }}
             type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
-            type=gha,mode=max
 
   deploy-to-k3s:
     name: Deployment (K3s)
@@ -101,7 +103,7 @@ jobs:
             ingress.annotations.traefik\.ingress\.kubernetes\.io/router\.entrypoints=websecure
             ingress.tls.enabled=${{ vars.INGRESS_TLS || 'false' }}
             ingress.tls.secretName=${{ secrets.INGRESS_TLS_SECRET || 'kaipo-client-tls' }}
-            envVars.NODE_ENV=${{ vars.NODE_ENV || 'production' }}
+            envVars.NODE_ENV=production
             envVars.PORT=3000
             envVars.NEXT_TELEMETRY_DISABLED=1
             envVars.NEXT_PUBLIC_API_BASE_URL=${{ vars.NEXT_PUBLIC_API_BASE_URL || 'https://apiuat.kaipo.my.id' }}
