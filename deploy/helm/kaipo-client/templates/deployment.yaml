@@ -47,7 +47,9 @@ spec:
             - name: {{ $key }}
               value: {{ $value | quote }}
             {{- end }}
+            {{- if .Values.container.env }}
             {{- toYaml .Values.container.env | nindent 12 }}
+            {{- end }}
 
           envFrom:
             {{- if .Values.configmap.enabled }}
