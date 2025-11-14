@@ -40,6 +40,7 @@ import {
   User,
 } from "lucide-react";
 import { ManualRegistrationForm } from "@/components/ManualRegistrationForm";
+import { WhatsAppRegistrationForm } from "@/components/WhatsAppRegistrationForm";
 import { useReservations } from "@/lib/queries/hooks/useReservations";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
@@ -436,7 +437,7 @@ export default function BasicPatientsPage() {
                 Daftarkan pasien yang menghubungi melalui WhatsApp
               </DialogDescription>
             </DialogHeader>
-            <ManualRegistrationForm
+            <WhatsAppRegistrationForm
               source="WHATSAPP"
               onClose={() => setIsWhatsAppModalOpen(false)}
               onSuccess={() => {
@@ -456,7 +457,7 @@ export default function BasicPatientsPage() {
                 Daftarkan pasien yang datang langsung ke klinik
               </DialogDescription>
             </DialogHeader>
-            <ManualRegistrationForm
+            <WhatsAppRegistrationForm
               source="WALKIN"
               onClose={() => setIsWalkInModalOpen(false)}
               onSuccess={() => {
