@@ -17,21 +17,20 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
-import { CalendarIcon, User, Phone, FileText, Stethoscope, Loader2 } from "lucide-react";
+import { CalendarIcon, User, Phone, FileText, Stethoscope, Loader2, MessageSquare } from "lucide-react";
 import { useDoctors } from "@/lib/queries/hooks/useDoctors";
 import { useBranches } from "@/lib/queries/hooks/useBranches";
 import { useTimeslots } from "@/lib/queries/hooks/useTimeslots";
 import { useCreateReservation } from "@/lib/queries/mutations/useCreateReservation";
 import { MiniDoctorSchedule } from "./MiniDoctorSchedule";
 
-interface ManualRegistrationFormProps {
+interface WhatsAppRegistrationFormProps {
   onClose: () => void;
   onSuccess: () => void;
-  source: 'WHATSAPP' | 'WALKIN';
-  title?: string;
+  source?: 'WHATSAPP' | 'WALKIN';
 }
 
-export function ManualRegistrationForm({ onClose, onSuccess, source, title }: ManualRegistrationFormProps) {
+export function WhatsAppRegistrationForm({ onClose, onSuccess, source = 'WHATSAPP' }: WhatsAppRegistrationFormProps) {
   const [selectedBranch, setSelectedBranch] = useState("");
   const [selectedDoctor, setSelectedDoctor] = useState("");
   const [selectedDate, setSelectedDate] = useState<Date>();
@@ -111,14 +110,25 @@ export function ManualRegistrationForm({ onClose, onSuccess, source, title }: Ma
   const isFormValid = formData.name && formData.phone && formData.complaint && 
                      selectedBranch && selectedDoctor && selectedDate && selectedTimeslot;
 
+  const isWhatsApp = source === 'WHATSAPP';
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Patient Information */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <User className="h-5 w-5" />
-            <span>{title || `Registrasi ${source === 'WHATSAPP' ? 'WhatsApp' : 'Walk-in'}`}</span>
+            {isWhatsApp ? (
+              <>
+                <MessageSquare className="h-5 w-5 text-green-600" />
+                <span>Informasi Pasien WhatsApp</span>
+              </>
+            ) : (
+              <>
+                <User className="h-5 w-5" />
+                <span>Informasi Pasien Walk-in</span>
+              </>
+            )}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -136,7 +146,7 @@ export function ManualRegistrationForm({ onClose, onSuccess, source, title }: Ma
             </div>
             <div>
               <label className="text-sm font-medium mb-2 block">
-                Nomor Telepon *
+                Nomor {isWhatsApp ? 'WhatsApp' : 'Telepon'} *
               </label>
               <div className="relative">
                 <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
@@ -149,7 +159,7 @@ export function ManualRegistrationForm({ onClose, onSuccess, source, title }: Ma
                 />
               </div>
             </div>
-            <div>
+            <div className="md:col-span-3">
               <label className="text-sm font-medium mb-2 block">
                 Keluhan *
               </label>
@@ -177,7 +187,7 @@ export function ManualRegistrationForm({ onClose, onSuccess, source, title }: Ma
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Branch Selection */}
             <div>
               <label className="text-sm font-medium mb-2 block">
@@ -338,9 +348,21 @@ export function ManualRegistrationForm({ onClose, onSuccess, source, title }: Ma
         <Button 
           type="submit" 
           disabled={!isFormValid || createReservationMutation.isPending}
-          className="bg-[#132a13] hover:bg-[#31572c] cursor-pointer"
+          className={cn(
+            "cursor-pointer",
+            isWhatsApp 
+              ? "bg-green-600 hover:bg-green-700" 
+              : "bg-orange-600 hover:bg-orange-700"
+          )}
         >
-          {createReservationMutation.isPending ? "Memproses..." : "Daftar Sekarang"}
+          {createReservationMutation.isPending ? (
+            <>
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              Memproses...
+            </>
+          ) : (
+            `Daftar ${isWhatsApp ? 'via WhatsApp' : 'Walk-in'}`
+          )}
         </Button>
       </div>
 

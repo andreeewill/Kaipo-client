@@ -14,7 +14,8 @@ import {
   ChevronUp,
   User,
 } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import { useNavigationWithLoading } from "@/hooks/use-navigation-loading";
 import Image from "next/image";
 
 // Menu items for the main navigation
@@ -28,11 +29,6 @@ const menuItems = [
     title: "Pendaftaran",
     icon: Calendar,
     submenu: [
-      {
-        title: "Pendaftaran Online",
-        url: "/appointment",
-        icon: Calendar,
-      },
       {
         title: "Daftar Reservasi",
         url: "/dashboard/basic-patients",
@@ -48,21 +44,15 @@ const menuItems = [
         url: "/dashboard/queue-management",
         icon: CalendarCheck,
       },
-    ],
-  },
-  {
-    title: "Penjadwalan",
-    icon: CalendarCheck,
-    submenu: [
       {
-        title: "Kalender",
-        url: "/dashboard/scheduling",
+        title: "Kalender Pasien",
+        url: "/dashboard/patient-calendar",
         icon: Calendar,
       },
     ],
   },
   {
-    title: "Rekam Medik Elektronik (RME)",
+    title: "RME",
     url: "/medical-record", 
     icon: Stethoscope,
   },
@@ -86,7 +76,7 @@ const menuItems = [
 
 export function AppSidebar() {
   const pathname = usePathname();
-  const router = useRouter();
+  const { navigate } = useNavigationWithLoading();
   const [isExpanded, setIsExpanded] = useState(true);
   const [expandedMenus, setExpandedMenus] = useState(new Set());
 
@@ -118,7 +108,7 @@ export function AppSidebar() {
 
   const handleNavigation = (url: string) => {
     console.log("Navigating to:", url); // Debug log
-    router.push(url);
+    navigate(url);
   };
 
   const toggleSidebar = () => {
@@ -279,8 +269,8 @@ export function AppSidebar() {
                     {/* Submenu */}
                     {isExpanded && expandedMenus.has(item.title) && (
                       <ul className="mt-2 ml-6 space-y-1">
-                        {item.submenu.map((subItem) => (
-                          <li key={subItem.title}>
+                        {item.submenu.map((subItem, index) => (
+                          <li key={subItem.title + index}>
                             <button
                               onClick={(e) => {
                                 e.preventDefault();
