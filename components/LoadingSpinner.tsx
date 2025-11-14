@@ -5,12 +5,11 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 
 export function LoadingSpinner() {
-  const [loading, setLoading] = useState(false);
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    setLoading(false);
+    // Reset loading state when pathname or searchParams change
   }, [pathname, searchParams]);
 
   return null; // This component doesn't render anything itself

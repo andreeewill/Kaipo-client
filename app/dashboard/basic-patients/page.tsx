@@ -39,7 +39,7 @@ import {
   Calendar,
   User,
 } from "lucide-react";
-import { ManualRegistrationForm } from "@/components/ManualRegistrationForm";
+
 import { WhatsAppRegistrationForm } from "@/components/WhatsAppRegistrationForm";
 import { useReservations } from "@/lib/queries/hooks/useReservations";
 import { format } from "date-fns";

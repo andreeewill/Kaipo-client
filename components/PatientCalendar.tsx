@@ -9,7 +9,6 @@ import {
   getDay,
   isSameDay,
   startOfDay,
-  endOfDay,
 } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
 import {
@@ -53,8 +52,20 @@ interface CalendarEvent {
   };
 }
 
+interface Reservation {
+  id?: string;
+  name: string;
+  phone: string;
+  complaint: string;
+  doctorName?: string;
+  status: string;
+  source?: string;
+  startTime: string;
+  endTime: string;
+}
+
 interface PatientCalendarProps {
-  reservations: any[]; // Array of reservations from API
+  reservations: Reservation[]; // Array of reservations from API
   onEventClick?: (event: CalendarEvent) => void;
   onDateSelect?: (date: Date) => void;
   defaultView?: View;
@@ -159,7 +170,7 @@ export function PatientCalendar({
   };
 
   // Custom month date header to show patient count
-  const CustomMonthDateHeader = ({ date, label }: any) => {
+  const CustomMonthDateHeader = ({ date, label }: { date: Date; label: string }) => {
     const dateKey = format(startOfDay(date), "yyyy-MM-dd");
     const count = patientCountByDate.get(dateKey) || 0;
 
@@ -200,7 +211,11 @@ export function PatientCalendar({
   };
 
   // Custom toolbar
-  const CustomToolbar = (toolbar: any) => {
+  const CustomToolbar = (toolbar: {
+    date: Date;
+    onNavigate: (action: string) => void;
+    onView: (view: View) => void;
+  }) => {
     const goToBack = () => {
       toolbar.onNavigate("PREV");
     };

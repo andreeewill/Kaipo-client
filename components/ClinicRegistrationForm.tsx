@@ -24,13 +24,12 @@ import type { CreateReservationData } from "@/lib/queries/types";
 import { MiniDoctorSchedule } from "./MiniDoctorSchedule";
 
 interface ClinicRegistrationFormProps {
-  clinicName: string;
+  clinicName?: string;
   onClose: () => void;
   organizationId?: string;
 }
 
 export function ClinicRegistrationForm({
-  clinicName,
   onClose,
   organizationId = "org_WdM3kHvuUApaQCEi",
 }: ClinicRegistrationFormProps) {

@@ -283,7 +283,7 @@ export default function PatientCalendarPage() {
               </div>
               <p className="text-sm text-blue-800">
                 Mode demo aktif - Menampilkan {dummyReservations.length} data dummy untuk visualisasi. 
-                Klik "Mode Demo (ON)" untuk melihat data real.
+                Klik &quot;Mode Demo (ON)&quot; untuk melihat data real.
               </p>
             </div>
           </div>

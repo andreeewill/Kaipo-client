@@ -1,13 +1,12 @@
 "use client";
 
 import { useMemo } from "react";
-import { Calendar, dateFnsLocalizer, View, Views } from "react-big-calendar";
+import { Calendar, dateFnsLocalizer, Views } from "react-big-calendar";
 import {
   format,
   parse,
   startOfWeek,
   getDay,
-  startOfDay,
 } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
